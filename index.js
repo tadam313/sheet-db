@@ -1,3 +1,3 @@
 var SheetDb = require('./lib/sheet_db');
 
-module.exports = SheetDb;
+module.exports = new SheetDb();
