@@ -2,6 +2,7 @@
   "name": "sheet-db",
   "description": "Use google spreadsheet very similar to Mongo DB",
   "main": "index.js",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/tadam313/sheet-db.git"
