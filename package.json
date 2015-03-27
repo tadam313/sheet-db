@@ -14,6 +14,7 @@
   "author": "Adam Pelle",
   "license": "MIT",
   "dependencies": {
+    "memory-cache": "^0.1.1",
     "request": "^2.51.0",
     "url-template": "^2.0.5",
     "xml-writer": "^1.6.0"
