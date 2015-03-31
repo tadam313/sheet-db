@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "encoding": "UTF-8",
+  "feed": {
+    "xmlns": "http//www.w3.org/2005/Atom",
+    "xmlns$openSearch": "http//a9.com/-/spec/opensearchrss/1.0/",
+    "xmlns$gsx": "http//schemas.google.com/spreadsheets/2006/extended",
+    "id": {
+      "$t": "https://spreadsheets.google.com/feeds/list/sheetId"
+    },
+    "updated": {
+      "$t": "2015-03-31T23:19:20.960Z"
+    },
+    "category": [
+      {
+        "scheme": "http//schemas.google.com/spreadsheets/2006",
+        "term": "http//schemas.google.com/spreadsheets/2006#list"
+      }
+    ],
+    "title": {
+      "type": "text",
+      "$t": "Sheet1"
+    },
+    "author": [
+      {
+        "name": {
+          "$t": "adam.pelle.peter"
+        },
+        "email": {
+          "$t": "adam.pelle.peter@gmail.com"
+        }
+      }
+    ],
+    "openSearch$totalResults": {
+      "$t":  "1"
+    },
+    "openSearch$startIndex": {
+      "$t": "1"
+    },
+    "entry": [
+      {
+        "id": {
+          "$t": "https://spreadsheets.google.com/feeds/list/sheetId/worksheetId/public/full/this_is_an_entryId"
+        },
+        "updated": {
+          "$t": "2015-03-31T23:19:20.960Z"
+        },
+        "category": [
+          {
+            "scheme": "http//schemas.google.com/spreadsheets/2006",
+            "term": "http//schemas.google.com/spreadsheets/2006#list"
+          }
+        ],
+        "title": {
+          "type": "text",
+          "$t": "1"
+        },
+        "content": {
+          "type": "text",
+          "$t": "test2"
+        },
+        "gsx$test1": {
+          "$t": "1"
+        },
+        "gsx$test2": {
+          "$t": "2"
+        }
+      }
+    ]
+  }
+}
