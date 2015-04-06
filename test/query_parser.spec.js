@@ -3,7 +3,7 @@
 var queryParser     = require('../lib/query_parser'),
     assert          = require('assert');
 
-describe('Query Parser', function() {
+describe('QueryParser', function() {
 
     describe('#parse', function() {
 
