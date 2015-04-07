@@ -31,6 +31,16 @@ describe('QueryParser', function() {
                 }]
             },
             expectation: 'field1 <= 20 and field2 >= 20'
+        },{
+            name: 'Wrap strings in enclosure',
+            query: {
+                $or: [{
+                    field1: { $eq: 'test1' }
+                }, {
+                    field2: { $eq: 'test2' }
+                }]
+            },
+            expectation: 'field1 = "test1" or field2 = "test2"'
         }, {
             name: 'Empty query',
             query: {},
@@ -43,7 +53,6 @@ describe('QueryParser', function() {
 
 
         testCases.forEach(function(testCase) {
-
             it(testCase.name, function() {
                 var resultQuery = queryParser.parse(testCase.query);
                 assert.equal(resultQuery, testCase.expectation);
