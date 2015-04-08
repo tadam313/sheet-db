@@ -3,7 +3,8 @@
 var sample_query_response       = require('./fixtures/sample_query'),
     sample_sheet_info           = require('./fixtures/sample_sheet_info'),
     sample_worksheet_creation   = require('./fixtures/sample_worksheet_creation'),
-    sample_entry_creation       = require('./fixtures/sample_entry_creation');
+    sample_entry_creation       = require('./fixtures/sample_entry_creation'),
+    sample_field_names          = require('./fixtures/sample_query_fieldnames');
 
 var modelConverter  = require('../lib/model_converter'),
     assert          = require('assert');
@@ -146,6 +147,24 @@ describe('ModelConverter', function() {
 
             var payload = modelConverter.createEntryRequest(entry);
             assert.equal(payload, expected);
+        });
+    });
+
+    describe('#queryFieldNames', function() {
+
+        it('should produce appropriate field name responses', function() {
+            var converted = modelConverter.queryFieldNames(sample_field_names);
+
+            assert.equal(converted.length, 2);
+            assert.deepEqual(converted, [{
+                $id: 'cellId1',
+                $updated: new Date('2015-04-07T22:58:53.274Z'),
+                cell: 'test1'
+            }, {
+                $id: 'cellId2',
+                $updated: new Date('2015-04-07T22:58:53.274Z'),
+                cell: 'test2'
+            }]);
         });
     });
 });
