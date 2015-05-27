@@ -1,7 +1,7 @@
 "use strict";
 
-var queryParser     = require('../lib/query_parser'),
-    assert          = require('assert');
+var queryParser     = require('../lib/query_parser');
+var assert          = require('assert');
 
 describe('QueryParser', function() {
 
@@ -41,6 +41,12 @@ describe('QueryParser', function() {
                 }]
             },
             expectation: 'field1 = "test1" or field2 = "test2"'
+        }, {
+            name: 'Plain simple equality comparision',
+            query: {
+                field1: 15
+            },
+            expectation: 'field1 = 15'
         }, {
             name: 'Empty query',
             query: {},

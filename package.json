@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/tadam313/sheet-db.git"
   },
+  "scripts": {
+    "test": "mocha test"
+  },
   "keywords": [
     "google",
     "database",
@@ -18,6 +21,7 @@
   "dependencies": {
     "memory-cache": "^0.1.1",
     "request": "^2.51.0",
+    "sift": "^1.1.1",
     "string-template": "^0.2.0",
     "xml-writer": "^1.6.0"
   },
