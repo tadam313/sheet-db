@@ -49,19 +49,19 @@ describe('ModelConverter', function() {
                 title: 'Test',
                 updated: new Date('2015-04-02T21:25:42.467Z'),
                 workSheets: [{
-                    id: 'worksheetId_1',
+                    worksheetId: 'worksheetId_1',
                     title: 'Sheet1',
                     updated: new Date('2015-04-02T21:25:42.467Z'),
                     colCount: 10,
                     rowCount: 20
                 }, {
-                    id: 'worksheetId_2',
+                    worksheetId: 'worksheetId_2',
                     title: 'Sheet2',
                     updated: new Date('2015-04-02T21:25:42.467Z'),
                     colCount: 20,
                     rowCount: 20
                 }, {
-                    id: 'worksheetId_3',
+                    worksheetId: 'worksheetId_3',
                     title: 'Sheet3',
                     updated: new Date('2015-04-02T21:25:42.467Z'),
                     colCount: 0,
@@ -81,7 +81,7 @@ describe('ModelConverter', function() {
             var converted = modelConverter.createWorksheetResponse(sample_worksheet_creation);
 
             assert.deepEqual(converted, {
-                id: 'worksheetId_1',
+                worksheetId: 'worksheetId_1',
                 title: 'Sheet1',
                 updated: new Date('2015-03-27T10:23:07.895Z'),
                 colCount: 10,
@@ -165,6 +165,18 @@ describe('ModelConverter', function() {
                 $updated: new Date('2015-04-07T22:58:53.274Z'),
                 cell: 'test2'
             }]);
+        });
+    });
+
+    describe('#createFieldRequest', function() {
+
+        it('should produce the appropriate request payload', function() {
+            var payload = modelConverter.createFieldRequest('test', 5);
+
+            assert.equal(payload,
+                '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006">' +
+                    '<gs:cell row="1" col="5" inputValue="test"/>' +
+                '</entry>');
         });
     });
 });
