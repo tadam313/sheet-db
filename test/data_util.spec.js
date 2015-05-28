@@ -5,7 +5,7 @@ var assert    = require('assert');
 
 describe('DataUtil', function() {
 
-    describe('#convertValue', function() {
+    describe('#coerceNumber', function() {
 
         var testCases = [{
             name: 'Simple integer',
@@ -31,7 +31,7 @@ describe('DataUtil', function() {
 
         testCases.forEach(function(testCase) {
             it(testCase.name, function() {
-                var resultQuery = data_util.convertValue(testCase.value);
+                var resultQuery = data_util.coerceNumber(testCase.value);
                 assert.equal(resultQuery, testCase.expectation);
             });
         });
