@@ -36,4 +36,58 @@ describe('DataUtil', function() {
             });
         });
     });
+
+    describe('#getArrayFields', function() {
+
+        var testCases = [{
+            name: 'Simple array',
+            value: [{ a: 1, b: 2}, { c: 3, d: 4}],
+            expectation: ['a', 'b', 'c', 'd']
+        }, {
+            name: 'Array with same elements',
+            value: [{a: 1}, {a: 1}],
+            expectation: ['a']
+        }, {
+            name: 'Empty array',
+            value: [],
+            expectation: []
+        }, {
+            name: 'Null',
+            value: null,
+            expectation: []
+        }];
+
+        testCases.forEach(function(testCase) {
+            it(testCase.name, function() {
+                var resultQuery = data_util.getArrayFields(testCase.value);
+                assert.deepEqual(resultQuery, testCase.expectation);
+            });
+        });
+    });
+
+    describe('#arrayDiff', function() {
+
+        it('Calculates differences between arrays', function() {
+            var arrayTarget = [1, 2, 3, 4 ];
+            var arrayCheck = [5, 6, 1, 2];
+
+            var diff = data_util.arrayDiff(arrayTarget, arrayCheck);
+
+            assert.deepEqual(diff, [3, 4]);
+        });
+
+        it('throws exception in case of non-array objects', function() {
+            var arrayTarget = {};
+            var arrayCheck = 5;
+            var thrown = false;
+
+            try {
+                data_util.arrayDiff(arrayTarget, arrayCheck);
+            } catch (err) {
+                thrown = true;
+            }
+
+            assert.equal(thrown, true);
+        });
+    });
 });
