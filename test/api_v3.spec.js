@@ -5,9 +5,124 @@ var sampleSheetInfo           = require('./fixtures/v3/sample_sheet_info');
 var sampleFieldNames          = require('./fixtures/v3/sample_query_fieldnames');
 
 var api  = require('../lib/api/v3');
+var util = require('util');
 var expect = require('chai').expect;
 
-describe('ModelConverter', function() {
+describe('Api_V3', function() {
+
+    describe('#getOperationContext', function() {
+
+        it('sets the visibility based on the token', function() {
+            var authenticated = api.getOperationContext('sheet_info', {token: 'test'});
+            var anonymous = api.getOperationContext('sheet_info');
+
+            expect(authenticated.headers).to.have.property('Authorization', 'Bearer test');
+            expect(authenticated.url).to.contain('/private/');
+
+            expect(anonymous.headers).to.not.have.property('Authorization');
+            expect(anonymous.url).to.contain('/public/');
+        });
+
+        it('should set the api version', function() {
+            var ctx = api.getOperationContext('sheet_info');
+
+            expect(ctx.headers).to.include({
+                'GData-Version': '3.0'
+            });
+        });
+
+        it('should assign request body', function() {
+            var ctx = api.getOperationContext('create_entry', {body: 'test'});
+
+            expect(ctx.body).to.equal('test');
+        });
+
+        it('should raise error requesting invalid operation', function() {
+            expect(api.getOperationContext.bind(api, 'no_operation'))
+                .to.throw(ReferenceError);
+        });
+
+        var testCases = [{
+            opType: 'sheet_info',
+            options: {sheetId: 'test'},
+            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/public/full?alt=json'
+        }, {
+            opType: 'create_worksheet',
+            options: {sheetId: 'test', token: 'test'},
+            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full'
+        }, {
+            opType: 'remove_worksheet',
+            options: {sheetId: 'test', worksheetId: 'testWS', token: 'test'},
+            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS'
+        }, {
+            opType: 'create_entry',
+            options: {sheetId: 'test', worksheetId: 'testWS', token: 'test'},
+            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full'
+        }, {
+            opType: 'query_worksheet',
+            options: util._extend({
+                sheetId: 'test',
+                worksheetId: 'testWS'
+            }, api.queryRequest({
+                query: 'field1 = 4',
+                sort: 'field1',
+                descending: true
+            })),
+            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/public/full?' +
+                'alt=json&sq=field1%20%3D%204&orderby=column:field1&reverse=true'
+        }, {
+            opType: 'delete_entry',
+            options: {
+                sheetId: 'test',
+                worksheetId: 'testWS',
+                token: 'test',
+                rowId: 'testR'
+            },
+            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR'
+        }, {
+            opType: 'query_fields',
+            options: {
+                sheetId: 'test',
+                worksheetId: 'testWS',
+                rowId: 'testR',
+                colCount: 3
+            },
+            expectation: 'https://spreadsheets.google.com/feeds/cells/test/testWS/public/full?' +
+                'alt=json&min-row=1&max-row=1&min-col=1&max-col=3'
+        }, {
+            opType: 'create_field',
+            options: {
+                sheetId: 'test',
+                worksheetId: 'testWS',
+                token: 'test',
+                cellId: 'R14'
+            },
+            expectation: 'https://spreadsheets.google.com/feeds/cells/test/testWS/private/full/R14'
+        }];
+
+        testCases.forEach(function(testCase) {
+            it('should creates the correct URLs for ' + testCase.opType, function() {
+                var ctx = api.getOperationContext(testCase.opType, testCase.options);
+                expect(ctx.url).to.equal(testCase.expectation);
+            });
+        });
+    });
+
+    describe('#queryRequest', function() {
+
+        it('converts query expression into appropriate query string form', function() {
+            var options = api.queryRequest({query: 'field1 >= 5'});
+
+            expect(options.query).to.equal('&sq=field1%20%3E%3D%205');
+        });
+
+        it('converts sorting expression into appropriate query string form', function() {
+            var options = api.queryRequest({sort: 'field1', descending: true});
+
+            expect(options.orderBy).to.equal('&orderby=column:field1');
+            expect(options.reverse).to.equal('&reverse=true');
+        });
+    });
 
     describe('#queryResponse', function() {
 
@@ -157,9 +272,9 @@ describe('ModelConverter', function() {
 
             var expected =
                 '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                    ' xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' +
-                    '<gsx:field1>0</gsx:field1>' +
-                    '<gsx:field2>NaN</gsx:field2>' +
+                ' xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' +
+                '<gsx:field1>0</gsx:field1>' +
+                '<gsx:field2>NaN</gsx:field2>' +
                 '</entry>';
 
             var payload = api.createEntryRequest(entry);
@@ -174,8 +289,8 @@ describe('ModelConverter', function() {
 
             expect(payload).to.equal(
                 '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                    ' xmlns:gs="http://schemas.google.com/spreadsheets/2006">' +
-                    '<gs:cell row="1" col="5" inputValue="test"/>' +
+                ' xmlns:gs="http://schemas.google.com/spreadsheets/2006">' +
+                '<gs:cell row="1" col="5" inputValue="test"/>' +
                 '</entry>');
         });
 

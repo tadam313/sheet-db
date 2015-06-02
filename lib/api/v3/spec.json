@@ -15,7 +15,7 @@
       }
     },
     "remove_worksheet": {
-      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}/version",
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}",
       "method": "GET"
     },
     "create_entry": {

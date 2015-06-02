@@ -28,7 +28,7 @@ describe('QueryParser', function() {
                     }
                 }]
             },
-            expectation: 'field1 < 13 or field2 > 15'
+            expectation: '(field1 < 13 or field2 > 15)'
         }, {
             name: 'And operator',
             query: {
@@ -42,7 +42,7 @@ describe('QueryParser', function() {
                     }
                 }]
             },
-            expectation: 'field1 <= 20 and field2 >= 20'
+            expectation: '(field1 <= 20 and field2 >= 20)'
         }, {
             name: 'Wrap strings in enclosure',
             query: {
@@ -56,7 +56,7 @@ describe('QueryParser', function() {
                     }
                 }]
             },
-            expectation: 'field1 = "test1" or field2 = "test2"'
+            expectation: '(field1 = "test1" or field2 = "test2")'
         }, {
             name: 'Plain simple equality comparision',
             query: {
@@ -70,7 +70,25 @@ describe('QueryParser', function() {
                     $in: [1, 2, 3]
                 }
             },
-            expectation: 'field1 = 1 or field1 = 2 or field1 = 3'
+            expectation: '(field1 = 1 or field1 = 2 or field1 = 3)'
+        }, {
+            name: 'Composite query',
+            query: {
+                $and: [{
+                    field1: 5
+                }, {
+                    field2: {
+                        $and: [{
+                            $gte: 5
+                        }, {
+                            $eq: 6
+                        }, {
+                            $in: [4, 5, 6]
+                        }]
+                    }
+                }]
+            },
+            expectation: '(field1 = 5 and (field2 >= 5 and field2 = 6 and (field2 = 4 or field2 = 5 or field2 = 6)))'
         }, {
             name: 'Empty query',
             query: {},
