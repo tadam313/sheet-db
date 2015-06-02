@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var data_util = require('../lib/data_util');
+var dataUtil = require('../lib/data_util');
 var assert    = require('assert');
 
 describe('DataUtil', function() {
@@ -31,7 +31,7 @@ describe('DataUtil', function() {
 
         testCases.forEach(function(testCase) {
             it(testCase.name, function() {
-                var resultQuery = data_util.coerceNumber(testCase.value);
+                var resultQuery = dataUtil.coerceNumber(testCase.value);
                 assert.equal(resultQuery, testCase.expectation);
             });
         });
@@ -41,7 +41,7 @@ describe('DataUtil', function() {
 
         var testCases = [{
             name: 'Simple array',
-            value: [{ a: 1, b: 2}, { c: 3, d: 4}],
+            value: [{a: 1, b: 2}, {c: 3, d: 4}],
             expectation: ['a', 'b', 'c', 'd']
         }, {
             name: 'Array with same elements',
@@ -59,7 +59,7 @@ describe('DataUtil', function() {
 
         testCases.forEach(function(testCase) {
             it(testCase.name, function() {
-                var resultQuery = data_util.getArrayFields(testCase.value);
+                var resultQuery = dataUtil.getArrayFields(testCase.value);
                 assert.deepEqual(resultQuery, testCase.expectation);
             });
         });
@@ -68,21 +68,21 @@ describe('DataUtil', function() {
     describe('#arrayDiff', function() {
 
         it('Calculates differences between arrays', function() {
-            var arrayTarget = [1, 2, 3, 4 ];
+            var arrayTarget = [1, 2, 3, 4];
             var arrayCheck = [5, 6, 1, 2];
 
-            var diff = data_util.arrayDiff(arrayTarget, arrayCheck);
+            var diff = dataUtil.arrayDiff(arrayTarget, arrayCheck);
 
             assert.deepEqual(diff, [3, 4]);
         });
 
-        it('throws exception in case of non-array objects', function() {
+        it('Throws exception in case of non-array objects', function() {
             var arrayTarget = {};
             var arrayCheck = 5;
             var thrown = false;
 
             try {
-                data_util.arrayDiff(arrayTarget, arrayCheck);
+                dataUtil.arrayDiff(arrayTarget, arrayCheck);
             } catch (err) {
                 thrown = true;
             }

@@ -1,0 +1,51 @@
+{
+  "root": "https://spreadsheets.google.com/feeds",
+  "version": "3",
+  "operations": {
+    "sheet_info": {
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full?alt=json",
+      "method": "GET",
+      "json": true
+    },
+    "create_worksheet": {
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/atom+xml"
+      }
+    },
+    "remove_worksheet": {
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}/version",
+      "method": "GET"
+    },
+    "create_entry": {
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/atom+xml"
+      }
+    },
+    "query_worksheet": {
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full?alt=json{query}{orderBy}{reverse}",
+      "method": "GET",
+      "json": true
+    },
+    "delete_entry": {
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{rowId}",
+      "method": "DELETE"
+    },
+    "query_fields": {
+      "url": "{apiRoot}/cells/{sheetId}/{worksheetId}/{visibility}/full?alt=json&min-row=1&max-row=1&min-col=1&max-col={colCount}",
+      "method": "GET",
+      "json": true
+    },
+    "create_field": {
+      "url": "{apiRoot}/cells/{sheetId}/{worksheetId}/{visibility}/full/{cellId}",
+      "method": "PUT",
+      "headers": {
+        "Content-Type": "application/atom+xml",
+        "If-Match": "*"
+      }
+    }
+  }
+}

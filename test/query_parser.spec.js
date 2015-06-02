@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 var queryParser     = require('../lib/query_parser');
-var assert          = require('assert');
+var expect          = require('chai').expect;
 
 describe('QueryParser', function() {
 
@@ -9,15 +9,23 @@ describe('QueryParser', function() {
 
         var testCases = [{
             name: 'Simple operator',
-            query: {  field1: { $gt: 10 } },
+            query: {
+                field1: {
+                    $gt: 10
+                }
+            },
             expectation: 'field1 > 10'
         }, {
             name: 'Or operator',
             query: {
                 $or: [{
-                    field1: { $lt: 13 }
+                    field1: {
+                        $lt: 13
+                    }
                 }, {
-                    field2: { $gt: 15 }
+                    field2: {
+                        $gt: 15
+                    }
                 }]
             },
             expectation: 'field1 < 13 or field2 > 15'
@@ -25,19 +33,27 @@ describe('QueryParser', function() {
             name: 'And operator',
             query: {
                 $and: [{
-                    field1: { $lte: 20 }
+                    field1: {
+                        $lte: 20
+                    }
                 }, {
-                    field2: { $gte: 20 }
+                    field2: {
+                        $gte: 20
+                    }
                 }]
             },
             expectation: 'field1 <= 20 and field2 >= 20'
-        },{
+        }, {
             name: 'Wrap strings in enclosure',
             query: {
                 $or: [{
-                    field1: { $eq: 'test1' }
+                    field1: {
+                        $eq: 'test1'
+                    }
                 }, {
-                    field2: { $eq: 'test2' }
+                    field2: {
+                        $eq: 'test2'
+                    }
                 }]
             },
             expectation: 'field1 = "test1" or field2 = "test2"'
@@ -48,6 +64,14 @@ describe('QueryParser', function() {
             },
             expectation: 'field1 = 15'
         }, {
+            name: 'Containment expression',
+            query: {
+                field1: {
+                    $in: [1, 2, 3]
+                }
+            },
+            expectation: 'field1 = 1 or field1 = 2 or field1 = 3'
+        }, {
             name: 'Empty query',
             query: {},
             expectation: ''
@@ -57,13 +81,11 @@ describe('QueryParser', function() {
             expectation: ''
         }];
 
-
         testCases.forEach(function(testCase) {
             it(testCase.name, function() {
                 var resultQuery = queryParser.parse(testCase.query);
-                assert.equal(resultQuery, testCase.expectation);
+                expect(resultQuery).to.equal(testCase.expectation);
             });
         });
     });
-
 });
