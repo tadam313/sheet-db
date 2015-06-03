@@ -51,7 +51,7 @@ describe('Api_V3', function() {
             options: {sheetId: 'test', token: 'test'},
             expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full'
         }, {
-            opType: 'remove_worksheet',
+            opType: 'drop_worksheet',
             options: {sheetId: 'test', worksheetId: 'testWS', token: 'test'},
             expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS'
         }, {
@@ -232,7 +232,7 @@ describe('Api_V3', function() {
 
             assertRequastPayload(sheetOptions,
                 '<title>' + sheetOptions.title  + '</title>' +
-                '<gs:rowCount>10</gs:rowCount>' +
+                '<gs:rowCount>50</gs:rowCount>' +
                 '<gs:colCount>10</gs:colCount>'
             );
         });

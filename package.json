@@ -2,7 +2,7 @@
   "name": "sheet-db",
   "description": "Use google spreadsheet very similar to Mongo DB",
   "main": "index.js",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/tadam313/sheet-db.git"
@@ -16,7 +16,7 @@
     "spreadsheet",
     "mongo"
   ],
-  "author": "Adam Pelle",
+  "author": "tadam313",
   "license": "MIT",
   "dependencies": {
     "async": "^1.0.0",

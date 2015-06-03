@@ -14,9 +14,9 @@
         "Content-Type": "application/atom+xml"
       }
     },
-    "remove_worksheet": {
+    "drop_worksheet": {
       "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}",
-      "method": "GET"
+      "method": "DELETE"
     },
     "create_entry": {
       "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full",
