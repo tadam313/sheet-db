@@ -8,6 +8,7 @@
     "url": "https://github.com/tadam313/sheet-db.git"
   },
   "scripts": {
+    "start": "node dev/request_token.js",
     "test": "mocha test && jscs ./**/*.js"
   },
   "keywords": [

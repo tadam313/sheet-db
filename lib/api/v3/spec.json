@@ -31,11 +31,15 @@
       "json": true
     },
     "update_entry": {
-      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{rowId}",
-      "method": "PUT"
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}",
+      "method": "PUT",
+      "headers": {
+        "Content-Type": "application/atom+xml",
+        "If-Match": "*"
+      }
     },
     "delete_entry": {
-      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{rowId}",
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}",
       "method": "DELETE"
     },
     "query_fields": {

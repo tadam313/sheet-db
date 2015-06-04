@@ -76,7 +76,7 @@ describe('Api_V3', function() {
                 sheetId: 'test',
                 worksheetId: 'testWS',
                 token: 'test',
-                rowId: 'testR'
+                entityId: 'testR'
             },
             expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR'
         }, {
@@ -84,7 +84,7 @@ describe('Api_V3', function() {
             options: {
                 sheetId: 'test',
                 worksheetId: 'testWS',
-                rowId: 'testR',
+                entityId: 'testR',
                 colCount: 3
             },
             expectation: 'https://spreadsheets.google.com/feeds/cells/test/testWS/public/full?' +

@@ -131,6 +131,20 @@ describe('QueryHelper', function() {
             ],
             expected: {field1: null, field2: new Date(0)}
         }, {
+            name: 'Assignment of array',
+            data: [
+                [{field1: 5}, {field1: 10}],
+                {$set: {field1: 15}}
+            ],
+            expected: [{field1: 15}, {field1: 15}]
+        }, {
+            name: 'Assign only existent properties',
+            data: [
+                {field1: 5},
+                {$set: {field2: 10}}
+            ],
+            expected: {field1: 5}
+        }, {
             name: 'Replace object',
             data: [
                 {field1: 5},
@@ -146,6 +160,6 @@ describe('QueryHelper', function() {
             expected: {field1: 42}
         }];
 
-        testUtil.runTests(testCases, query.mutateObject);
+        testUtil.runTests(testCases, query.mutateObjects);
     });
 });
