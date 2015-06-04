@@ -1,10 +1,11 @@
 'use strict';
 
-var sampleQueryResponse       = require('./fixtures/v3/sample_query');
-var sampleSheetInfo           = require('./fixtures/v3/sample_sheet_info');
-var sampleFieldNames          = require('./fixtures/v3/sample_query_fieldnames');
+var sampleQueryResponse = require('./fixtures/v3/sample_query');
+var sampleSheetInfo = require('./fixtures/v3/sample_sheet_info');
+var sampleFieldNames = require('./fixtures/v3/sample_query_fieldnames');
 
 var api  = require('../lib/api/v3');
+var testUtil = require('./test_util');
 var util = require('util');
 var expect = require('chai').expect;
 
@@ -43,68 +44,78 @@ describe('Api_V3', function() {
         });
 
         var testCases = [{
-            opType: 'sheet_info',
-            options: {sheetId: 'test'},
-            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/public/full?alt=json'
+            name: 'should creates the correct URLs for sheet_info',
+            data: ['sheet_info', {
+                sheetId: 'test'
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/public/full?alt=json'
         }, {
-            opType: 'create_worksheet',
-            options: {sheetId: 'test', token: 'test'},
-            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full'
+            name: 'should creates the correct URLs for create_worksheet',
+            data: ['create_worksheet', {
+                sheetId: 'test',
+                token: 'test'}
+            ],
+            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full'
         }, {
-            opType: 'drop_worksheet',
-            options: {sheetId: 'test', worksheetId: 'testWS', token: 'test'},
-            expectation: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS'
+            name: 'should creates the correct URLs for drop_worksheet',
+            data: ['drop_worksheet', {
+                sheetId: 'test',
+                worksheetId: 'testWS',
+                token: 'test'
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS'
         }, {
-            opType: 'create_entry',
-            options: {sheetId: 'test', worksheetId: 'testWS', token: 'test'},
-            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full'
+            name: 'should creates the correct URLs for query_worksheet',
+            data: ['create_entry', {
+                sheetId: 'test',
+                worksheetId: 'testWS',
+                token: 'test'
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full'
         }, {
-            opType: 'query_worksheet',
-            options: util._extend({
+            name: 'should creates the correct URLs for query_worksheet',
+            data: ['query_worksheet', util._extend({
                 sheetId: 'test',
                 worksheetId: 'testWS'
             }, api.queryRequest({
                 query: 'field1 = 4',
                 sort: 'field1',
                 descending: true
-            })),
-            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/public/full?' +
+            }))],
+            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/public/full?' +
                 'alt=json&sq=field1%20%3D%204&orderby=column:field1&reverse=true'
         }, {
-            opType: 'delete_entry',
-            options: {
+            name: 'should creates the correct URLs for delete_entry',
+            data: ['delete_entry', {
                 sheetId: 'test',
                 worksheetId: 'testWS',
                 token: 'test',
                 entityId: 'testR'
-            },
-            expectation: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR'
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR'
         }, {
-            opType: 'query_fields',
-            options: {
+            name: 'should creates the correct URLs for query_fields',
+            data: ['query_fields', {
                 sheetId: 'test',
                 worksheetId: 'testWS',
                 entityId: 'testR',
                 colCount: 3
-            },
-            expectation: 'https://spreadsheets.google.com/feeds/cells/test/testWS/public/full?' +
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/cells/test/testWS/public/full?' +
                 'alt=json&min-row=1&max-row=1&min-col=1&max-col=3'
         }, {
-            opType: 'create_field',
-            options: {
+            name: 'should creates the correct URLs for create_field',
+            data: ['create_field', {
                 sheetId: 'test',
                 worksheetId: 'testWS',
                 token: 'test',
                 cellId: 'R14'
-            },
-            expectation: 'https://spreadsheets.google.com/feeds/cells/test/testWS/private/full/R14'
+            }],
+            expected: 'https://spreadsheets.google.com/feeds/cells/test/testWS/private/full/R14'
         }];
 
-        testCases.forEach(function(testCase) {
-            it('should creates the correct URLs for ' + testCase.opType, function() {
-                var ctx = api.getOperationContext(testCase.opType, testCase.options);
-                expect(ctx.url).to.equal(testCase.expectation);
-            });
+        testUtil.runTests(testCases, function(opType, options) {
+            return api.getOperationContext(opType, options).url;
         });
     });
 
@@ -130,7 +141,7 @@ describe('Api_V3', function() {
             var converted = api.queryResponse(sampleQueryResponse);
 
             expect(converted.length).to.equal(1);
-            expect(converted).to.deep.equal([{
+            expect(converted).to.eql([{
                 $id: 'this_is_an_entryId',
                 $updated: new Date('2015-03-31T23:19:20.960Z'),
                 test1: 1,
@@ -146,7 +157,7 @@ describe('Api_V3', function() {
             expect(converted.workSheets.length).to.equal(3);
             expect(converted.authors.length).to.equal(1);
 
-            expect(converted).to.deep.equal({
+            expect(converted).to.eql({
                 title: 'Test',
                 updated: new Date('2015-04-02T21:25:42.467Z'),
                 workSheets: [{
@@ -182,7 +193,7 @@ describe('Api_V3', function() {
             var converted = api.queryFieldNames(sampleFieldNames);
 
             expect(converted.length).to.equal(2);
-            expect(converted).to.deep.equal([{
+            expect(converted).to.eql([{
                 $id: 'cellId1',
                 $updated: new Date('2015-04-07T22:58:53.274Z'),
                 cell: 'test1'
@@ -196,19 +207,6 @@ describe('Api_V3', function() {
 
     describe('#createWorksheetRequest', function() {
 
-        var assertRequastPayload = function(options, expected) {
-
-            var payload = api.createWorksheetRequest(options);
-
-            expect(payload).to.equal(
-                '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                ' xmlns:gs="http://schemas.google.com/spreadsheets/2006">' +
-                expected +
-                '</entry>'
-            );
-        };
-
-        // TODO: use XML library ot make the attribute order in the expected XML string independent
         it('should produce the appropriate request payload', function() {
             var sheetOptions = {
                 title: 'sheet-title',
@@ -216,11 +214,12 @@ describe('Api_V3', function() {
                 colCount: 12
             };
 
-            assertRequastPayload(sheetOptions,
+            var expected =
                 '<title>' + sheetOptions.title  + '</title>' +
                 '<gs:rowCount>' + sheetOptions.rowCount + '</gs:rowCount>' +
-                '<gs:colCount>' + sheetOptions.colCount + '</gs:colCount>'
-            );
+                '<gs:colCount>' + sheetOptions.colCount + '</gs:colCount>';
+
+            testUtil.assertXMLPayload(expected, api.createWorksheetRequest(sheetOptions));
         });
 
         it('should coerce int values of row and columncount', function() {
@@ -230,17 +229,17 @@ describe('Api_V3', function() {
                 colCount: null
             };
 
-            assertRequastPayload(sheetOptions,
+            var expected  =
                 '<title>' + sheetOptions.title  + '</title>' +
                 '<gs:rowCount>50</gs:rowCount>' +
-                '<gs:colCount>10</gs:colCount>'
-            );
+                '<gs:colCount>10</gs:colCount>';
+
+            testUtil.assertXMLPayload(expected, api.createWorksheetRequest(sheetOptions));
         });
     });
 
     describe('#createEntryRequest', function() {
 
-        // TODO: use XML library ot make the attribute order in the expected XML string independent
         it('should produce the appropriate request payload', function() {
             var entry = {
                 id: 10,
@@ -248,8 +247,7 @@ describe('Api_V3', function() {
                 field2: 'another_test'
             };
 
-            var expected = '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                ' xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">';
+            var expected = '';
 
             for (var key in entry) {
                 if (entry.hasOwnProperty(key)) {
@@ -258,10 +256,7 @@ describe('Api_V3', function() {
                 }
             }
 
-            expected += '</entry>';
-
-            var payload = api.createEntryRequest(entry);
-            expect(payload).to.equal(expected);
+            testUtil.assertXMLPayload(expected, api.createEntryRequest(entry), true);
         });
 
         it('should handle exotic values', function() {
@@ -271,27 +266,20 @@ describe('Api_V3', function() {
             };
 
             var expected =
-                '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                ' xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' +
                 '<gsx:field1>0</gsx:field1>' +
-                '<gsx:field2>NaN</gsx:field2>' +
-                '</entry>';
+                '<gsx:field2>NaN</gsx:field2>';
 
-            var payload = api.createEntryRequest(entry);
-            expect(payload).to.equal(expected)
+            testUtil.assertXMLPayload(expected, api.createEntryRequest(entry), true);
         });
     });
 
     describe('#createFieldRequest', function() {
 
         it('should produce the appropriate request payload', function() {
-            var payload = api.createFieldRequest('test', 5);
-
-            expect(payload).to.equal(
-                '<entry xmlns="http://www.w3.org/2005/Atom"' +
-                ' xmlns:gs="http://schemas.google.com/spreadsheets/2006">' +
-                '<gs:cell row="1" col="5" inputValue="test"/>' +
-                '</entry>');
+            testUtil.assertXMLPayload(
+                '<gs:cell row="1" col="5" inputValue="test"/>',
+                api.createFieldRequest('test', 5)
+            );
         });
 
         it('should throws error in case of invalid values', function() {
@@ -299,9 +287,8 @@ describe('Api_V3', function() {
 
             invalidValues.forEach(function(invalid) {
                 expect(api.createFieldRequest.bind(
-                        api,
-                        'something',
-                        invalid)
+                        {}, 'something', invalid
+                    )
                 ).to.throw(TypeError);
             });
         });

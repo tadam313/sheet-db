@@ -80,6 +80,16 @@ describe('QueryHelper', function() {
             },
             expected: '(field1 = 5 and (field2 >= 5 and field2 = 6 and (field2 = 4 or field2 = 5 or field2 = 6)))'
         }, {
+            name: 'Not supported operation',
+            data: {
+                field1: {$type: Date}
+            },
+            expected: ''
+        }, {
+            name: 'Query for internal property',
+            data: {$id: 5},
+            expected: '$id = 5'
+        }, {
             name: 'Empty data',
             data: {},
             expected: ''

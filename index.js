@@ -2,11 +2,11 @@ var SheetDb = require('./lib/sheet_db');
 var util = require('./lib/util');
 
 /**
- * Connects and initializes the specific worksheet
+ * Connects and initializes the sheet db.
  *
- * @param sheetId
- * @param options
- * @param callback
+ * @param {string} sheetId ID of the specific spreadsheet
+ * @param {object} options Optional options.
+ * @param {function} callback
  */
 function connect(sheetId, options, callback) {
 
