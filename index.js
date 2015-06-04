@@ -1,4 +1,5 @@
 var SheetDb = require('./lib/sheet_db');
+var util = require('./lib/util');
 
 /**
  * Connects and initializes the specific worksheet
@@ -8,11 +9,6 @@ var SheetDb = require('./lib/sheet_db');
  * @param callback
  */
 function connect(sheetId, options, callback) {
-
-    if (typeof options === 'function') {
-        callback = options;
-        options = null;
-    }
 
     options = options || {};
     options.version = 'v3';
@@ -29,5 +25,5 @@ function connect(sheetId, options, callback) {
 }
 
 module.exports = {
-    connect: connect
+    connect: util.variations([['sheetId', 'callback']], connect)
 };

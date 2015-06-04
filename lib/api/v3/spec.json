@@ -30,6 +30,10 @@
       "method": "GET",
       "json": true
     },
+    "update_entry": {
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{rowId}",
+      "method": "PUT"
+    },
     "delete_entry": {
       "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{rowId}",
       "method": "DELETE"

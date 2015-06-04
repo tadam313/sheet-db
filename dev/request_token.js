@@ -4,16 +4,16 @@
 var jwt     = require('jsonwebtoken');
 var request = require('request');
 
-if (!process.argv[2]) {
+if (!process.env.USER_ID) {
     throw new Error('UserId is required');
 }
 
-if (!process.argv[3]) {
+if (!process.env.PRIVATE_KEY) {
     throw new Error('Auth key is required');
 }
 
-var user = process.argv[2];
-var key = process.argv[3].replace(/\\n/g, '\n').replace(/\\u([\d\w]{4})/gi, function(match, grp) {
+var user = process.env.USER_ID;
+var key = process.env.PRIVATE_KEY.replace(/\\n/g, '\n').replace(/\\u([\d\w]{4})/gi, function(match, grp) {
     return String.fromCharCode(parseInt(grp, 16));
 });
 

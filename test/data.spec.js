@@ -1,6 +1,6 @@
 'use strict';
 
-var dataUtil = require('../lib/data_util');
+var dataUtil = require('../lib/util');
 var assert    = require('assert');
 
 describe('DataUtil', function() {
