@@ -2,10 +2,10 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 
 /**
- * Run given testcases on the subject
+ * Run given testcases on the subject. The tests automatically use fake time.
  *
- * @param testCases
- * @param subject
+ * @param {array} testCases Data provider for the tests
+ * @param {function} subject Given function to feed with testcases
  */
 function runTests(testCases, subject) {
 

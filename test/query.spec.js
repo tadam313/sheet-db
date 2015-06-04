@@ -92,7 +92,7 @@ describe('QueryHelper', function() {
         testUtil.runTests(testCases, query.stringify);
     });
 
-    describe('#isMutatorDescriptor', function() {
+    describe('#isUpdateDescriptor', function() {
 
         var testCases = [{
             name: 'POJO',
@@ -112,10 +112,10 @@ describe('QueryHelper', function() {
             expected: false
         }];
 
-        testUtil.runTests(testCases, query.isMutatorDescriptor);
+        testUtil.runTests(testCases, query.isUpdateDescriptor);
     });
 
-    describe('#mutateObject', function() {
+    describe('#updateObject', function() {
         var testCases = [{
             name: 'Simple assignment',
             data: [
@@ -160,6 +160,6 @@ describe('QueryHelper', function() {
             expected: {field1: 42}
         }];
 
-        testUtil.runTests(testCases, query.mutateObjects);
+        testUtil.runTests(testCases, query.updateObject);
     });
 });
