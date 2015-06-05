@@ -140,12 +140,22 @@ describe('Api_V3', function() {
         it('should return appropriate data only', function() {
             var converted = api.queryResponse(sampleQueryResponse);
 
-            expect(converted.length).to.equal(1);
+            expect(converted.length).to.equal(3);
             expect(converted).to.eql([{
-                $id: 'this_is_an_entryId',
+                $id: 'this_is_an_entryId_1',
                 $updated: new Date('2015-03-31T23:19:20.960Z'),
-                test1: 1,
-                test2: 2
+                field1: 1,
+                field2: 2
+            }, {
+                $id: 'this_is_an_entryId_2',
+                $updated: new Date('2015-03-31T23:19:20.960Z'),
+                field1: 3,
+                field2: 4
+            }, {
+                $id: 'this_is_an_entryId_3',
+                $updated: new Date('2015-03-31T23:19:20.960Z'),
+                field1: 5,
+                field2: 6
             }]);
         });
     });

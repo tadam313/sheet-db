@@ -40,7 +40,7 @@
     "entry": [
       {
         "id": {
-          "$t": "https://spreadsheets.google.com/feeds/list/sheetId/worksheetId/public/full/this_is_an_entryId"
+          "$t": "https://spreadsheets.google.com/feeds/list/sheetId/worksheetId/public/full/this_is_an_entryId_1"
         },
         "updated": {
           "$t": "2015-03-31T23:19:20.960Z"
@@ -57,13 +57,67 @@
         },
         "content": {
           "type": "text",
-          "$t": "test2"
+          "$t": "field2"
         },
-        "gsx$test1": {
+        "gsx$field1": {
           "$t": "1"
         },
-        "gsx$test2": {
+        "gsx$field2": {
           "$t": "2"
+        }
+      }, {
+        "id": {
+          "$t": "https://spreadsheets.google.com/feeds/list/sheetId/worksheetId/public/full/this_is_an_entryId_2"
+        },
+        "updated": {
+          "$t": "2015-03-31T23:19:20.960Z"
+        },
+        "category": [
+          {
+            "scheme": "http//schemas.google.com/spreadsheets/2006",
+            "term": "http//schemas.google.com/spreadsheets/2006#list"
+          }
+        ],
+        "title": {
+          "type": "text",
+          "$t": "3"
+        },
+        "content": {
+          "type": "text",
+          "$t": "field2"
+        },
+        "gsx$field1": {
+          "$t": "3"
+        },
+        "gsx$field2": {
+          "$t": "4"
+        }
+      }, {
+        "id": {
+          "$t": "https://spreadsheets.google.com/feeds/list/sheetId/worksheetId/public/full/this_is_an_entryId_3"
+        },
+        "updated": {
+          "$t": "2015-03-31T23:19:20.960Z"
+        },
+        "category": [
+          {
+            "scheme": "http//schemas.google.com/spreadsheets/2006",
+            "term": "http//schemas.google.com/spreadsheets/2006#list"
+          }
+        ],
+        "title": {
+          "type": "text",
+          "$t": "5"
+        },
+        "content": {
+          "type": "text",
+          "$t": "field2"
+        },
+        "gsx$field1": {
+          "$t": "5"
+        },
+        "gsx$field2": {
+          "$t": "6"
         }
       }
     ]

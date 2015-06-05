@@ -50,7 +50,13 @@ function assertXMLPayload(expected, payload, extendedSchema) {
     );
 }
 
+/**
+ * No-op function, usefull at callbacks when we need to pass argument but we don't care about the result
+ */
+function identFunc() {}
+
 module.exports = {
     runTests: runTests,
-    assertXMLPayload: assertXMLPayload
+    assertXMLPayload: assertXMLPayload,
+    identFunc: identFunc
 };
