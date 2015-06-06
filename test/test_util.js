@@ -44,8 +44,7 @@ function assertXMLPayload(expected, payload, extendedSchema) {
         (extendedSchema ?
             'xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"' :
             'xmlns:gs="http://schemas.google.com/spreadsheets/2006"'
-        ) +
-        '>' + expected +
+        ) + '>' + expected +
         '</entry>'
     );
 }
@@ -55,8 +54,30 @@ function assertXMLPayload(expected, payload, extendedSchema) {
  */
 function identFunc() {}
 
+/**
+ *
+ *
+ * @param stubDependency
+ * @param functionInvoker
+ */
+function assertFuncReportsError(stubDependency, functionInvoker) {
+    var spy = sinon.spy();
+    var err = new Error('test');
+
+    if (typeof functionInvoker !== 'function') {
+        throw new TypeError('functionInvoker should be function (strategy pattern)');
+    }
+
+    // make outer dependency yielding error back
+    stubDependency.yields(err);
+
+    functionInvoker(spy);
+    expect(spy).to.have.been.calledWithExactly(err);
+}
+
 module.exports = {
     runTests: runTests,
     assertXMLPayload: assertXMLPayload,
-    identFunc: identFunc
+    identFunc: identFunc,
+    assertFuncReportsError: assertFuncReportsError
 };

@@ -206,11 +206,11 @@ describe('Api_V3', function() {
             expect(converted).to.eql([{
                 $id: 'cellId1',
                 $updated: new Date('2015-04-07T22:58:53.274Z'),
-                cell: 'test1'
+                cell: 'field1'
             }, {
                 $id: 'cellId2',
                 $updated: new Date('2015-04-07T22:58:53.274Z'),
-                cell: 'test2'
+                cell: 'field2'
             }]);
         });
     });
@@ -297,8 +297,7 @@ describe('Api_V3', function() {
 
             invalidValues.forEach(function(invalid) {
                 expect(api.createFieldRequest.bind(
-                        {}, 'something', invalid
-                    )
+                        {}, 'something', invalid)
                 ).to.throw(TypeError);
             });
         });

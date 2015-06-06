@@ -103,8 +103,8 @@
         "gs$cell": {
           "row": "1",
           "col": "1",
-          "inputValue": "test1",
-          "$t": "test1"
+          "inputValue": "fields1",
+          "$t": "field1"
         }
       },
       {
@@ -138,8 +138,8 @@
         "gs$cell": {
           "row": "1",
           "col": "2",
-          "inputValue": "test2",
-          "$t": "test2"
+          "inputValue": "field2",
+          "$t": "field2"
         }
       }
     ]

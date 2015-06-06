@@ -1,4 +1,4 @@
-var SheetDb = require('./lib/sheet_db');
+var Spreadsheet = require('./lib/spreadsheet');
 var util = require('./lib/util');
 
 /**
@@ -13,7 +13,7 @@ function connect(sheetId, options, callback) {
     options = options || {};
     options.version = 'v3';
 
-    var sheetDb = new SheetDb(sheetId, options);
+    var sheetDb = new Spreadsheet(sheetId, options);
 
     sheetDb.sheetInfo(function(err) {
         if (err) {
