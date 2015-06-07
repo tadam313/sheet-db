@@ -24,7 +24,12 @@ function runTests(testCases, subject) {
                 testCase.data instanceof Array ? testCase.data : [testCase.data]
             );
 
-            expect(result).to.eql(testCase.expected);
+            if (testCase.matches) {
+                expect(result).to.match(testCase.matches);
+            } else if (testCase.expected) {
+                expect(result).to.eql(testCase.expected);
+            }
+
             clock.restore();
         });
     });

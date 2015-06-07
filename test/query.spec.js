@@ -8,13 +8,13 @@ describe('QueryHelper', function() {
     describe('#stringify', function() {
 
         var testCases = [{
-            name: 'Simple operator',
+            name: 'should convert simple operator',
             data: {
                 field1: {$gt: 10}
             },
-            expected: 'field1 > 10'
+            matches: /^field1\s*>\s*10$/
         }, {
-            name: 'Or operator',
+            name: ' should convert or operator',
             data: {
                 $or: [{
                     field1: {$lt: 13}
@@ -22,9 +22,9 @@ describe('QueryHelper', function() {
                     field2: {$gt: 15}
                 }]
             },
-            expected: '(field1 < 13 or field2 > 15)'
+            matches: /^\(field1\s*<\s*13\s*or\s*field2\s*>\s*15\)$/
         }, {
-            name: 'And operator',
+            name: 'should convert and operator',
             data: {
                 $and: [{
                     field1: {$lte: 20}
@@ -32,9 +32,9 @@ describe('QueryHelper', function() {
                     field2: {$gte: 20}
                 }]
             },
-            expected: '(field1 <= 20 and field2 >= 20)'
+            matches: /^\(field1\s*<=\s*20\s*and\s*field2\s*>=\s*20\)$/
         }, {
-            name: 'Wrap strings in enclosure',
+            name: 'should wrap strings in enclosure',
             data: {
                 $or: [{
                     field1: {$eq: 'test1'}
@@ -42,61 +42,59 @@ describe('QueryHelper', function() {
                     field2: {$eq: 'test2'}
                 }]
             },
-            expected: '(field1 = "test1" or field2 = "test2")'
+            matches: /^\(field1\s*=\s*"test1"\s*or\s*field2\s*=\s*"test2"\)$/
         }, {
-            name: 'Plain simple equality comparision',
+            name: 'should convert plain simple equality comparision',
             data: {
                 field1: 15
             },
-            expected: 'field1 = 15'
+            matches: /field1\s*=\s*15/
         }, {
-            name: 'Containment expression',
+            name: 'should convert containment expression',
             data: {
                 field1: {$in: [1, 2, 3]}
             },
-            expected: '(field1 = 1 or field1 = 2 or field1 = 3)'
+            matches: /^\(field1\s*=\s*1\s*or\s*field1\s*=\s*2\s*or\s*field1\s*=\s*3\)$/
         }, {
-            name: 'Containment expression negation',
+            name: 'should convert containment expression negation',
             data: {
                 field1: {$nin: [1, 2, 3]}
             },
-            expected: '(field1 <> 1 and field1 <> 2 and field1 <> 3)'
+            matches: /^\(field1\s*<>\s*1\s*and\s*field1\s*<>\s*2\s*and\s*field1\s*<>\s*3\)$/
         }, {
-            name: 'Composite data',
+            name: 'should convert composite querystring.escape(str);',
             data: {
                 $and: [{
-                    field1: 5
+                    fld1: 5
                 }, {
-                    field2: {
-                        $and: [{
-                            $gte: 5
+                    fld2: {
+                        $or: [{
+                            $gt: 5
                         }, {
-                            $eq: 6
-                        }, {
-                            $in: [4, 5, 6]
+                            $in: [4, 5]
                         }]
                     }
                 }]
             },
-            expected: '(field1 = 5 and (field2 >= 5 and field2 = 6 and (field2 = 4 or field2 = 5 or field2 = 6)))'
+            matches: /^\(fld1\s*=\s*5\s*and\s*\(fld2\s*>\s*5\s*or\s*\(fld2\s*=\s*4\s*or\s*fld2\s*=\s*5\s*\)\)\)$/
         }, {
-            name: 'Not supported operation',
+            name: 'should skip not supported operation',
             data: {
                 field1: {$type: Date}
             },
-            expected: ''
+            matches: /^$/
         }, {
-            name: 'Query for internal property',
+            name: 'should convert interlan properties queries',
             data: {$id: 5},
-            expected: '$id = 5'
+            matches: /\$id\s*=\s*5/
         }, {
-            name: 'Empty data',
+            name: 'should handle empty query',
             data: {},
-            expected: ''
+            matches: /^$/
         }, {
-            name: 'Null data',
+            name: 'should handle null',
             data: null,
-            expected: ''
+            matches: /^$/
         }];
 
         testUtil.runTests(testCases, query.stringify);
@@ -105,19 +103,19 @@ describe('QueryHelper', function() {
     describe('#isUpdateDescriptor', function() {
 
         var testCases = [{
-            name: 'POJO',
+            name: 'should recognize POJO',
             data: {field1: 1},
             expected: false
         }, {
-            name: 'Simple datariptor#1',
+            name: 'should recognize simple datariptor#1',
             data: {$set: {field1: 5}},
             expected: true
         }, {
-            name: 'Simple datariptor#2',
+            name: 'should recognize simple datariptor#2',
             data: {$currentDate: {field1: true}},
             expected: true
         }, {
-            name: 'Null object',
+            name: 'should handle null',
             data: null,
             expected: false
         }];
@@ -127,42 +125,42 @@ describe('QueryHelper', function() {
 
     describe('#updateObject', function() {
         var testCases = [{
-            name: 'Simple assignment',
+            name: 'should handle simple assignment',
             data: [
                 {field1: 5, field2: 'foo'},
                 {$set: {field1: 42, field2: 'bar'}}
             ],
             expected: {field1: 42, field2: 'bar'}
         }, {
-            name: 'Composite assignment',
+            name: 'should handle composite assignment',
             data: [
                 {field1: 5, field2: 6},
                 {$set: {field1: null}, $currentDate: {field2: true, field1: false}}
             ],
             expected: {field1: null, field2: new Date(0)}
         }, {
-            name: 'Assignment of array',
+            name: 'should handle assignment of array',
             data: [
                 [{field1: 5}, {field1: 10}],
                 {$set: {field1: 15}}
             ],
             expected: [{field1: 15}, {field1: 15}]
         }, {
-            name: 'Assign only existent properties',
+            name: 'should assign only existent properties',
             data: [
                 {field1: 5},
                 {$set: {field2: 10}}
             ],
             expected: {field1: 5}
         }, {
-            name: 'Replace object',
+            name: 'should handle replace object',
             data: [
                 {field1: 5},
                 {field2: 42}
             ],
             expected: {field2: 42}
         }, {
-            name: 'Invalid descriptor',
+            name: 'should handle skip invalid descriptor',
             data: [
                 {field1: 42},
                 null

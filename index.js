@@ -1,4 +1,5 @@
 var Spreadsheet = require('./lib/spreadsheet');
+var clientFactory = require('./lib/rest_client');
 var util = require('./lib/util');
 
 /**
@@ -13,7 +14,9 @@ function connect(sheetId, options, callback) {
     options = options || {};
     options.version = 'v3';
 
-    var sheetDb = new Spreadsheet(sheetId, options);
+    var restClient = clientFactory(options.token, options.version);
+
+    var sheetDb = new Spreadsheet(sheetId, restClient, options);
 
     sheetDb.sheetInfo(function(err) {
         if (err) {
@@ -24,6 +27,7 @@ function connect(sheetId, options, callback) {
     });
 }
 
-module.exports = {
-    connect: util.variations([['sheetId', 'callback']], connect)
-};
+module.exports = util.variations([
+        ['sheetId', 'callback'],
+        ['sheetId', 'token', 'callback']
+    ], connect);

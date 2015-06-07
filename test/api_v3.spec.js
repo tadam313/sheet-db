@@ -13,7 +13,7 @@ describe('Api_V3', function() {
 
     describe('#getOperationContext', function() {
 
-        it('sets the visibility based on the token', function() {
+        it('should sets the visibility based on the token', function() {
             var authenticated = api.getOperationContext('sheet_info', {token: 'test'});
             var anonymous = api.getOperationContext('sheet_info');
 
@@ -121,13 +121,13 @@ describe('Api_V3', function() {
 
     describe('#queryRequest', function() {
 
-        it('converts query expression into appropriate query string form', function() {
+        it('should converts query expression into appropriate query string form', function() {
             var options = api.queryRequest({query: 'field1 >= 5'});
 
             expect(options.query).to.equal('&sq=field1%20%3E%3D%205');
         });
 
-        it('converts sorting expression into appropriate query string form', function() {
+        it('should converts sorting expression into appropriate query string form', function() {
             var options = api.queryRequest({sort: 'field1', descending: true});
 
             expect(options.orderBy).to.equal('&orderby=column:field1');

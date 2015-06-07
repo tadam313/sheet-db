@@ -113,7 +113,7 @@ describe('Worksheet', function() {
             ]);
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(queryWorksheetStub, function(spy) {
                 worksheet.find(spy);
             });
@@ -122,7 +122,7 @@ describe('Worksheet', function() {
 
     describe('#insert', function() {
 
-        it('should insert entry', function() {
+        it('should call the api', function() {
             // arrange
             var entry = {field1: 3, field2: 10};
 
@@ -146,7 +146,7 @@ describe('Worksheet', function() {
             expect(spy).to.have.been.called;
         });
 
-        it('should insert columns if the sheet does not contain', function() {
+        it('should insert columns if the sheet does not contain them', function() {
             // arrange
             var entry = {field1: 3, field3: 10, field5: 20};
 
@@ -167,7 +167,7 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(insertEntriesStub, function(spy) {
                 worksheet.insert({}, spy);
             });
@@ -176,7 +176,7 @@ describe('Worksheet', function() {
 
     describe('#update', function() {
 
-        it('should update entry', function() {
+        it('should call the api', function() {
             var entry = {field1: 'test'};
 
             // act
@@ -256,7 +256,7 @@ describe('Worksheet', function() {
             findStub.restore();
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(updateEntriesStub, function(spy) {
                 worksheet.update(null, null, spy);
             });
@@ -265,7 +265,7 @@ describe('Worksheet', function() {
 
     describe('#delete', function() {
 
-        it('should delete entry', function() {
+        it('should call the api', function() {
             // arrange
             var selector = {field1: 1};
 
@@ -294,7 +294,7 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(deleteEntriesStub, function(spy) {
                 worksheet.delete(spy);
             });
@@ -303,7 +303,7 @@ describe('Worksheet', function() {
 
     describe('#listColumns', function() {
 
-        it('should lists columns', function() {
+        it('should call the api', function() {
             // act
             worksheet.listColumns(spy);
 
@@ -314,7 +314,7 @@ describe('Worksheet', function() {
             ]);
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(queryFieldsStub, function(spy) {
                 worksheet.listColumns(spy);
             });
@@ -352,7 +352,7 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should reports error', function() {
+        it('should reports api error', function() {
             testUtil.assertFuncReportsError(createColumnsStub, function(spy) {
                 worksheet.createColumns(['field1'], spy);
             });

@@ -4,51 +4,51 @@ var util = require('../lib/util');
 var testUtil = require('./test_util');
 var expect   = require('chai').expect;
 
-describe('DataUtil', function() {
+describe('Util', function() {
 
-    describe('#coerceNumber', function() {
+    describe('#coercevalue', function() {
 
         var testCases = [{
-            name: 'Simple integer',
+            name: 'should coerce integer',
             data: '42',
             expected: 42
         }, {
-            name: 'Simple dotted float',
+            name: 'should coerce dotted float',
             data: '42.1',
             expected: 42.1
         }, {
-            name: 'Simple comma float',
+            name: 'should coerce comma float',
             data: '42,1',
             expected: 42.1
         }, {
-            name: 'Simple string',
+            name: 'should leave string untouched',
             data: 'Test string',
             expected: 'Test string'
         }, {
-            name: 'Date String',
+            name: 'should coerce Date',
             data: '2015-04-07T22:58:53.274Z',
-            expected: '2015-04-07T22:58:53.274Z'
+            expected: new Date('2015-04-07T22:58:53.274Z')
         }];
 
-        testUtil.runTests(testCases, util.coerceNumber);
+        testUtil.runTests(testCases, util.coerceValue);
     });
 
     describe('#getArrayFields', function() {
 
         var testCases = [{
-            name: 'Simple array',
+            name: 'should query simple array',
             data: [[{a: 1, b: 2}, {c: 3, d: 4}]],
             expected: ['a', 'b', 'c', 'd']
         }, {
-            name: 'Array with same elements',
+            name: 'should query array with same elements',
             data: [[{a: 1}, {a: 1}]],
             expected: ['a']
         }, {
-            name: 'Empty array',
+            name: 'should handle empty array',
             data: [[]],
             expected: []
         }, {
-            name: 'Null',
+            name: 'should handle null',
             data: null,
             expected: []
         }];
@@ -58,7 +58,7 @@ describe('DataUtil', function() {
 
     describe('#arrayDiff', function() {
 
-        it('Calculates differences between arrays', function() {
+        it('should calculates differences between arrays', function() {
             var arrayTarget = [1, 2, 3, 4];
             var arrayCheck = [5, 6, 1, 2];
 
@@ -67,13 +67,24 @@ describe('DataUtil', function() {
             expect(diff).to.deep.equal([3, 4]);
         });
 
-        it('Throws exception in case of non-array objects', function() {
+        it('should throws error in case of non-array objects', function() {
             var arrayTarget = {};
             var arrayCheck = 5;
 
             expect(util.arrayDiff.bind(
                 util, arrayTarget, arrayCheck)
             ).to.throw(Error);
+        });
+    });
+
+    describe('#isNaN', function() {
+
+        it('should detect simple NaN', function() {
+            expect(util.isNaN(NaN)).to.be.ok;
+        });
+
+        it('should detect \'0\'', function() {
+            expect(util.isNaN('0')).to.be.ok;
         });
     });
 });
