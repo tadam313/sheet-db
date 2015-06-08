@@ -27,7 +27,9 @@ function connect(sheetId, options, callback) {
     });
 }
 
-module.exports = util.variations([
+module.exports = {
+    connect: util.variations([
         ['sheetId', 'callback'],
         ['sheetId', 'token', 'callback']
-    ], connect);
+    ], connect)
+};

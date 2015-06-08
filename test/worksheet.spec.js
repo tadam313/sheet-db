@@ -263,14 +263,14 @@ describe('Worksheet', function() {
         });
     });
 
-    describe('#delete', function() {
+    describe('#remove', function() {
 
         it('should call the api', function() {
             // arrange
             var selector = {field1: 1};
 
             // act
-            worksheet.delete(selector, testUtil.identFunc);
+            worksheet.remove(selector, testUtil.identFunc);
 
             // assert
             expect(deleteEntriesStub).to.have.been.calledOnce;
@@ -284,7 +284,7 @@ describe('Worksheet', function() {
             var selector = {$id: 'test'};
 
             // act
-            worksheet.delete(selector, testUtil.identFunc);
+            worksheet.remove(selector, testUtil.identFunc);
 
             // assert
             expect(deleteEntriesStub).to.have.been.calledOnce;
@@ -294,67 +294,23 @@ describe('Worksheet', function() {
             );
         });
 
+        it('should delete only one entity if justOne is set', function() {
+            // arrange
+            var selector = {field1: {$in: [1, 2, 3]}};
+
+            // act
+            worksheet.remove(selector, {justOne: true}, testUtil.identFunc);
+
+            // assert
+            expect(deleteEntriesStub).to.have.been.calledOnce;
+            expect(deleteEntriesStub).to.have.been.calledWith(
+                {sheetId: 'test'}, ['this_is_an_entryId_1']
+            );
+        });
+
         it('should reports api error', function() {
             testUtil.assertFuncReportsError(deleteEntriesStub, function(spy) {
-                worksheet.delete(spy);
-            });
-        });
-    });
-
-    describe('#listColumns', function() {
-
-        it('should call the api', function() {
-            // act
-            worksheet.listColumns(spy);
-
-            expect(queryFieldsStub).to.have.been.calledOnce;
-            expect(spy).to.have.been.calledWith(null, [
-                sinon.match({cell: 'field1'}),
-                sinon.match({cell: 'field2'})
-            ]);
-        });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(queryFieldsStub, function(spy) {
-                worksheet.listColumns(spy);
-            });
-        });
-    });
-
-    describe('#createColumns', function() {
-
-        it('should get column list every time to check existing columns', function() {
-            // arrange
-            var fields = ['field3', 'field4'];
-
-            // act
-            worksheet.createColumns(fields, testUtil.identFunc);
-
-            // assert
-            expect(createColumnsStub).to.have.been.calledOnce;
-            expect(queryFieldsStub).to.have.been.calledOnce;
-            expect(createColumnsStub).to.have.been.calledWith(
-                {sheetId: 'test'}, fields, 2
-            );
-        });
-
-        it('should create only new columns', function() {
-            // arrange
-            var fields = ['field2', 'field3'];
-
-            // act
-            worksheet.createColumns(fields, testUtil.identFunc);
-
-            // assert
-            expect(createColumnsStub).to.have.been.calledOnce;
-            expect(createColumnsStub).to.have.been.calledWith(
-                {sheetId: 'test'}, ['field3'], 2
-            );
-        });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(createColumnsStub, function(spy) {
-                worksheet.createColumns(['field1'], spy);
+                worksheet.remove(spy);
             });
         });
     });

@@ -146,6 +146,48 @@ describe('QueryHelper', function() {
             ],
             expected: [{field1: 15}, {field1: 15}]
         }, {
+            name: 'should handle inc operator',
+            data: [
+                {field1: 6},
+                {$inc: {field1: 10}}
+            ],
+            expected: {field1: 16}
+        }, {
+            name: 'should handle mul operator',
+            data: [
+                {field1: 6},
+                {$mul: {field1: 2}}
+            ],
+            expected: {field1: 12}
+        }, {
+            name: 'should handle min operator',
+            data: [
+                {field1: 6},
+                {$min: {field1: 2}}
+            ],
+            expected: {field1: 2}
+        }, {
+            name: 'should skip min operator',
+            data: [
+                {field1: 6},
+                {$min: {field1: 7}}
+            ],
+            expected: {field1: 6}
+        }, {
+            name: 'should handle max operator',
+            data: [
+                {field1: 6},
+                {$max: {field1: 10}}
+            ],
+            expected: {field1: 10}
+        }, {
+            name: 'should skip max operator',
+            data: [
+                {field1: 6},
+                {$max: {field1: 2}}
+            ],
+            expected: {field1: 6}
+        }, {
             name: 'should assign only existent properties',
             data: [
                 {field1: 5},
