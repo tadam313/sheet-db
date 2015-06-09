@@ -27,10 +27,10 @@ describe('Worksheet', function() {
 
     beforeEach(function() {
         queryWorksheetStub = sinon.stub(restClient, 'queryWorksheet');
-        queryWorksheetStub.yields(null, restClient.getApi().queryResponse(sampleQueryResponse));
+        queryWorksheetStub.yields(null, restClient.getApi().converter.queryResponse(sampleQueryResponse));
 
         queryFieldsStub = sinon.stub(restClient, 'queryFields');
-        queryFieldsStub.yields(null, restClient.getApi().queryFieldNames(sampleFieldQueryResponse));
+        queryFieldsStub.yields(null, restClient.getApi().converter.queryFieldNames(sampleFieldQueryResponse));
 
         insertEntriesStub = sinon.stub(restClient, 'insertEntries');
         insertEntriesStub.yields(null);

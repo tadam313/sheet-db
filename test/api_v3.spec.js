@@ -77,7 +77,7 @@ describe('Api_V3', function() {
             data: ['query_worksheet', util._extend({
                 sheetId: 'test',
                 worksheetId: 'testWS'
-            }, api.queryRequest({
+            }, api.converter.queryRequest({
                 query: 'field1 = 4',
                 sort: 'field1',
                 descending: true
@@ -122,13 +122,13 @@ describe('Api_V3', function() {
     describe('#queryRequest', function() {
 
         it('should converts query expression into appropriate query string form', function() {
-            var options = api.queryRequest({query: 'field1 >= 5'});
+            var options = api.converter.queryRequest({query: 'field1 >= 5'});
 
             expect(options.query).to.equal('&sq=field1%20%3E%3D%205');
         });
 
         it('should converts sorting expression into appropriate query string form', function() {
-            var options = api.queryRequest({sort: 'field1', descending: true});
+            var options = api.converter.queryRequest({sort: 'field1', descending: true});
 
             expect(options.orderBy).to.equal('&orderby=column:field1');
             expect(options.reverse).to.equal('&reverse=true');
@@ -138,7 +138,7 @@ describe('Api_V3', function() {
     describe('#queryResponse', function() {
 
         it('should return appropriate data only', function() {
-            var converted = api.queryResponse(sampleQueryResponse);
+            var converted = api.converter.queryResponse(sampleQueryResponse);
 
             expect(converted.length).to.equal(3);
             expect(converted).to.eql([{
@@ -162,7 +162,7 @@ describe('Api_V3', function() {
 
     describe('#sheetInfoResponse', function() {
         it ('should convert the data', function() {
-            var converted = api.sheetInfoResponse(sampleSheetInfo);
+            var converted = api.converter.sheetInfoResponse(sampleSheetInfo);
 
             expect(converted.workSheets.length).to.equal(3);
             expect(converted.authors.length).to.equal(1);
@@ -200,7 +200,7 @@ describe('Api_V3', function() {
     describe('#queryFieldNames', function() {
 
         it('should produce appropriate field name responses', function() {
-            var converted = api.queryFieldNames(sampleFieldNames);
+            var converted = api.converter.queryFieldNames(sampleFieldNames);
 
             expect(converted.length).to.equal(2);
             expect(converted).to.eql([{
@@ -229,7 +229,7 @@ describe('Api_V3', function() {
                 '<gs:rowCount>' + sheetOptions.rowCount + '</gs:rowCount>' +
                 '<gs:colCount>' + sheetOptions.colCount + '</gs:colCount>';
 
-            testUtil.assertXMLPayload(expected, api.createWorksheetRequest(sheetOptions));
+            testUtil.assertXMLPayload(expected, api.converter.createWorksheetRequest(sheetOptions));
         });
 
         it('should coerce int values of row and columncount', function() {
@@ -241,10 +241,10 @@ describe('Api_V3', function() {
 
             var expected  =
                 '<title>' + sheetOptions.title  + '</title>' +
-                '<gs:rowCount>50</gs:rowCount>' +
-                '<gs:colCount>10</gs:colCount>';
+                '<gs:rowCount>5000</gs:rowCount>' +
+                '<gs:colCount>50</gs:colCount>';
 
-            testUtil.assertXMLPayload(expected, api.createWorksheetRequest(sheetOptions));
+            testUtil.assertXMLPayload(expected, api.converter.createWorksheetRequest(sheetOptions));
         });
     });
 
@@ -266,7 +266,7 @@ describe('Api_V3', function() {
                 }
             }
 
-            testUtil.assertXMLPayload(expected, api.createEntryRequest(entry), true);
+            testUtil.assertXMLPayload(expected, api.converter.createEntryRequest(entry), true);
         });
 
         it('should handle exotic values', function() {
@@ -279,7 +279,7 @@ describe('Api_V3', function() {
                 '<gsx:field1>0</gsx:field1>' +
                 '<gsx:field2>NaN</gsx:field2>';
 
-            testUtil.assertXMLPayload(expected, api.createEntryRequest(entry), true);
+            testUtil.assertXMLPayload(expected, api.converter.createEntryRequest(entry), true);
         });
     });
 
@@ -288,7 +288,7 @@ describe('Api_V3', function() {
         it('should produce the appropriate request payload', function() {
             testUtil.assertXMLPayload(
                 '<gs:cell row="1" col="5" inputValue="test"/>',
-                api.createFieldRequest('test', 5)
+                api.converter.createFieldRequest('test', 5)
             );
         });
 
@@ -296,7 +296,7 @@ describe('Api_V3', function() {
             var invalidValues = [NaN, null, -5];
 
             invalidValues.forEach(function(invalid) {
-                expect(api.createFieldRequest.bind(
+                expect(api.converter.createFieldRequest.bind(
                         {}, 'something', invalid)
                 ).to.throw(TypeError);
             });

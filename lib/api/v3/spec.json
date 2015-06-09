@@ -40,7 +40,10 @@
     },
     "delete_entry": {
       "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}",
-      "method": "DELETE"
+      "method": "DELETE",
+      "headers": {
+        "If-Match": "*"
+      }
     },
     "query_fields": {
       "url": "{apiRoot}/cells/{sheetId}/{worksheetId}/{visibility}/full?alt=json&min-row=1&max-row=1&min-col=1&max-col={colCount}",
