@@ -14,6 +14,7 @@ function connect(sheetId, options, callback) {
     options = options || {};
     options.version = 'v3';
 
+    // TODO: needs better access token handling
     var restClient = clientFactory(options.token, options.version);
 
     var sheetDb = new Spreadsheet(sheetId, restClient, options);

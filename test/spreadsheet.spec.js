@@ -27,7 +27,7 @@ describe('Spreadsheet', function() {
         sheet = new Spreadsheet(sheetTitle, restClient, {token: 'test'});
 
         querySheetInfoStub = sinon.stub(restClient, 'querySheetInfo');
-        querySheetInfoStub.yields(null, restClient.getApi().sheetInfoResponse(sampleQueryResponse));
+        querySheetInfoStub.yields(null, restClient.getApi().converter.sheetInfoResponse(sampleQueryResponse));
 
         createWorksheetStub = sinon.stub(restClient, 'createWorksheet');
         createWorksheetStub.yields(null);
