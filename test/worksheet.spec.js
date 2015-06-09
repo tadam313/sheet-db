@@ -69,9 +69,9 @@ describe('Worksheet', function() {
             // assert
             expect(queryWorksheetStub).to.have.been.calledOnce;
             expect(spy).to.have.been.calledWithExactly(null, [
-                sinon.match({$id: 'this_is_an_entryId_1'}),
-                sinon.match({$id: 'this_is_an_entryId_2'}),
-                sinon.match({$id: 'this_is_an_entryId_3'})
+                sinon.match({_id: 'this_is_an_entryId_1'}),
+                sinon.match({_id: 'this_is_an_entryId_2'}),
+                sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
         });
 
@@ -84,8 +84,8 @@ describe('Worksheet', function() {
 
             //assert
             expect(spy).to.have.been.calledWithExactly(null, [
-                sinon.match({$id: 'this_is_an_entryId_1'}),
-                sinon.match({$id: 'this_is_an_entryId_2'})
+                sinon.match({_id: 'this_is_an_entryId_1'}),
+                sinon.match({_id: 'this_is_an_entryId_2'})
             ]);
         });
 
@@ -98,7 +98,7 @@ describe('Worksheet', function() {
 
             //assert
             expect(spy).to.have.been.calledWithExactly(null, [
-                sinon.match({$id: 'this_is_an_entryId_3'})
+                sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
         });
 
@@ -108,8 +108,8 @@ describe('Worksheet', function() {
 
             //assert
             expect(spy).to.have.been.calledWithExactly(null, [
-                sinon.match({$id: 'this_is_an_entryId_2'}),
-                sinon.match({$id: 'this_is_an_entryId_3'})
+                sinon.match({_id: 'this_is_an_entryId_2'}),
+                sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
         });
 
@@ -279,9 +279,9 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should directly call deleteEntry without find if selector contains only $id (performance...)', function() {
+        it('should directly call deleteEntry without find if selector contains only _id (performance...)', function() {
             // arrange
-            var selector = {$id: 'test'};
+            var selector = {_id: 'test'};
 
             // act
             worksheet.remove(selector, testUtil.identFunc);

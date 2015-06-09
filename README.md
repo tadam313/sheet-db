@@ -43,14 +43,14 @@ Sheetdb.connect('<sheetId>', function(err, sheet) {
 
 // create new sheet (requires authentication)
 Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    sheet.create('<sheetTitle>', function(err) {
+    sheet.createWorksheet('<sheetTitle>', function(err) {
         if (!err) { }
     });
 });
 
 // drop a sheet (requires authentication)
 Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    sheet.drop('<sheetTitle>', function(err) {
+    sheet.dropWorksheet('<sheetTitle>', function(err) {
         if (!err) { }
     });
 });

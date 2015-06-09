@@ -142,18 +142,18 @@ describe('Api_V3', function() {
 
             expect(converted.length).to.equal(3);
             expect(converted).to.eql([{
-                $id: 'this_is_an_entryId_1',
-                $updated: new Date('2015-03-31T23:19:20.960Z'),
+                _id: 'this_is_an_entryId_1',
+                _updated: new Date('2015-03-31T23:19:20.960Z'),
                 field1: 1,
                 field2: 2
             }, {
-                $id: 'this_is_an_entryId_2',
-                $updated: new Date('2015-03-31T23:19:20.960Z'),
+                _id: 'this_is_an_entryId_2',
+                _updated: new Date('2015-03-31T23:19:20.960Z'),
                 field1: 3,
                 field2: 4
             }, {
-                $id: 'this_is_an_entryId_3',
-                $updated: new Date('2015-03-31T23:19:20.960Z'),
+                _id: 'this_is_an_entryId_3',
+                _updated: new Date('2015-03-31T23:19:20.960Z'),
                 field1: 5,
                 field2: 6
             }]);
@@ -204,12 +204,12 @@ describe('Api_V3', function() {
 
             expect(converted.length).to.equal(2);
             expect(converted).to.eql([{
-                $id: 'cellId1',
-                $updated: new Date('2015-04-07T22:58:53.274Z'),
+                _id: 'cellId1',
+                _updated: new Date('2015-04-07T22:58:53.274Z'),
                 cell: 'field1'
             }, {
-                $id: 'cellId2',
-                $updated: new Date('2015-04-07T22:58:53.274Z'),
+                _id: 'cellId2',
+                _updated: new Date('2015-04-07T22:58:53.274Z'),
                 cell: 'field2'
             }]);
         });

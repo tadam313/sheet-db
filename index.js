@@ -18,7 +18,7 @@ function connect(sheetId, options, callback) {
 
     var sheetDb = new Spreadsheet(sheetId, restClient, options);
 
-    sheetDb.sheetInfo(function(err) {
+    sheetDb.info(function(err) {
         if (err) {
             return callback(err);
         }
@@ -30,6 +30,6 @@ function connect(sheetId, options, callback) {
 module.exports = {
     connect: util.variations([
         ['sheetId', 'callback'],
-        ['sheetId', 'token', 'callback']
+        ['sheetId', 'options', 'callback']
     ], connect)
 };

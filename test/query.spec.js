@@ -84,9 +84,9 @@ describe('QueryHelper', function() {
             },
             matches: /^$/
         }, {
-            name: 'should convert interlan properties queries',
-            data: {$id: 5},
-            matches: /\$id\s*=\s*5/
+            name: 'should convert internal properties queries',
+            data: {_id: 5},
+            matches: /_id\s*=\s*5/
         }, {
             name: 'should handle empty query',
             data: {},
@@ -187,6 +187,13 @@ describe('QueryHelper', function() {
                 {$max: {field1: 2}}
             ],
             expected: {field1: 6}
+        }, {
+            name: 'should handle collection update',
+            data: [
+                [{field1: 10}, {field1: 20}, {field2: 10}],
+                {$set: {field1: 14}, $inc: {field2: 5}}
+            ],
+            expected: [{field1: 14}, {field1: 14}, {field2: 15}]
         }, {
             name: 'should assign only existent properties',
             data: [

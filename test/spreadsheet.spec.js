@@ -48,7 +48,7 @@ describe('Spreadsheet', function() {
 
         it('should call api', function() {
             // act
-            sheet.sheetInfo(spy);
+            sheet.info(spy);
 
             // assert
             expect(querySheetInfoStub).to.have.been.calledWith(
@@ -62,7 +62,7 @@ describe('Spreadsheet', function() {
 
         it('should reports api error', function() {
             testUtil.assertFuncReportsError(querySheetInfoStub, function(spy) {
-                sheet.sheetInfo(spy);
+                sheet.info(spy);
             });
         });
     });
@@ -82,7 +82,7 @@ describe('Spreadsheet', function() {
         it('should return worksheet instance', function() {
             // arrange
             var worksheetStub = sinon.stub(sheet, 'worksheet');
-            worksheetStub.yields(null, new Worksheet('test', {}, restClient))
+            worksheetStub.yields(null, new Worksheet('test', {}, restClient));
 
             // act
             sheet.createWorksheet('test', spy);
@@ -95,7 +95,7 @@ describe('Spreadsheet', function() {
 
         it('should check worksheet existance if worksheets are cached (via sheetInfo)', function() {
             // act
-            sheet.sheetInfo(spy);
+            sheet.info(spy);
             sheet.createWorksheet('Sheet1', spy);
 
             // assert
@@ -154,12 +154,9 @@ describe('Spreadsheet', function() {
         });
 
         it('should return value normally and callback if sheetInfo is called', function() {
-            // arrange
-            var worksheet = null;
-
             // act
-            sheet.sheetInfo(spy);
-            worksheet = sheet.worksheet('Sheet1', spy);
+            sheet.info(spy);
+            var worksheet = sheet.worksheet('Sheet1', spy);
 
             // assert
             expect(worksheet).to.be.an.instanceOf(Worksheet);
