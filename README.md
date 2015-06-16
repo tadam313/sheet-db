@@ -10,7 +10,9 @@ It supports single queries and CRUD operations also. Please consider that some o
 
 ## Installation
 
-Soon...
+```
+npm install sheet-db
+```
 
 ## Usage
 
@@ -33,7 +35,7 @@ Sheetdb.connect('<sheetId>', {token: '<token>', version: 'v3'}, function(err, sh
 
 ### Working with sheets
 
-Sheets are the highest level entities in Spreadsheets. You can create, delete and query a specific sheet.
+Sheets are the highest level entities in Spreadsheets. You can query a specific sheet anytime or create, delete the worksheets.
 
 ```
 // query info about the specifi sheet (authors, worksheets)
@@ -43,7 +45,7 @@ Sheetdb.connect('<sheetId>', function(err, sheet) {
 
 // create new sheet (requires authentication)
 Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    sheet.createWorksheet('<sheetTitle>', function(err) {
+    sheet.createWorksheet('<sheetTitle>', function(err, worksheet) {
         if (!err) { }
     });
 });
@@ -159,7 +161,8 @@ Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
 
 ## Contributing
 
-If you have some new idea or just want to refactor existing features a bit, please do that, don't be shy. I just want you to keep 2 things:
+If you have some new idea or just want to refactor existing features a bit, fell free to contribute. 
+I just want you to keep 2 things:
 
 - code style (jscs included in the build flow and config should be changed for valid reasons)
 - tests (please cover your code with unit tests)
