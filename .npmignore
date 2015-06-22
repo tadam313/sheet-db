@@ -1,0 +1,15 @@
+test/
+test_local.js
+Makefile
+.travis.yml
+.jscsrc
+
+dev/
+
+npm-debug.log
+
+TODO.md
+CONTRIBUTING.md
+
+# IDE
+.idea
