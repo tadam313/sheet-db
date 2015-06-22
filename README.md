@@ -2,7 +2,7 @@
 
 # sheet-db
 
-The aim of the project is to provide a mongo like interface to Google Spreadsheets API. Why are Spreadsheets useful? It is a real quick and evident data solution, easy to view and share in any browser. In addition it keeps your managers happy since they love sheets, don't they?
+The aim of the project is to provide a mongo like interface to Google Spreadsheets API. What is the point of Spreadsheets? It is a real quick and evident data solution, easy to view and share in any browser. In addition it keeps your managers happy since they love sheets, don't they?
 
 Wait, Spreadsheets are not schema-less like mongo, right? It is true, however sheet-db hides all the nasty schema related things from you, all you need to care is the data itself and ignore the structure. Welcome to the NoSql world!
 
@@ -16,7 +16,7 @@ npm install sheet-db
 
 ## Usage
 
-Before you start, please make sure you are familiar with the terminology of Spreadsheets. Especially differencies and relations between sheets, worksheets and cells. Read more about [the terminology](https://developers.google.com/google-apps/spreadsheets/index).
+Before you start, please make sure you are familiar with the terminology of Spreadsheets. Especially differences and relations between sheets, worksheets and cells. Read more about [the terminology](https://developers.google.com/google-apps/spreadsheets/index).
 
 First include the package and connect to the specific spreadsheets.
 
@@ -77,7 +77,7 @@ Sheetdb.connect('<sheetId>', function(err, sheet) {
 
 Now you have the worksheet instance and here comes the good part.
 
-You can **query** the worksheet. You could pass a [mongo like selector](http://docs.mongodb.org/manual/reference/operator/query/) object here. The interesting part is that some parts of the selector will gets translated to Google Structured Query language. This means the performance is extremly good. Hmm, but it is limited, right? Yep, but don't worry, the unsupported selector operators will take effect on the client side, so finally you always get the data you requested.
+You can **query** the worksheet. You could pass a [mongo like selector](http://docs.mongodb.org/manual/reference/operator/query/) object here. The interesting thing is that some parts of the selector will gets translated to Google Structured Query language. This means the performance is extremly good. Hmm, but it is limited, right? Yep, but don't worry, the unsupported selector operators will take effect on the client side, so finally you always get the data you requested.
 
 ```
 // query the worksheet
@@ -162,6 +162,7 @@ Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
 ## Contributing
 
 If you have some new idea or just want to refactor existing features a bit, fell free to contribute. 
+Just fork the repository, do your modification and create a pull request.
 I just want you to keep 2 things:
 
 - code style (jscs included in the build flow and config should be changed for valid reasons)
