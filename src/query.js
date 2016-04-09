@@ -16,49 +16,38 @@ var OPS = {
     $eq:    ' = '
 };
 
-var UPDATE_OPS = [{
-    op: '$set',
-    logic: function(object, key, val) {
+var UPDATE_OPS = {
+    '$set': (object, key, val) => {
         if (object.hasOwnProperty(key)) {
             object[key] = val;
         }
-    }
-}, {
-    op: '$inc',
-    logic: function(object, key, val) {
-        if (object.hasOwnProperty(key) && typeof object[key] === 'number') {
+    },
+    '$inc': (object, key, val) => {
+        if (typeof object[key] === 'number') {
             object[key] += val;
         }
-    }
-}, {
-    op: '$mul',
-    logic: function(object, key, val) {
-        if (object.hasOwnProperty(key) && typeof object[key] === 'number') {
+    },
+    '$mul': (object, key, val) => {
+        if (typeof object[key] === 'number') {
             object[key] *= val;
         }
-    }
-}, {
-    op: '$min',
-    logic: function(object, key, val) {
+    },
+    '$min': (object, key, val) => {
         if (typeof object[key] === 'number') {
             object[key] = object[key] > val ? val : object[key] ;
         }
-    }
-}, {
-    op: '$max',
-    logic: function(object, key, val) {
+    },
+    '$max': (object, key, val) => {
         if (typeof object[key] === 'number') {
             object[key] = object[key] < val ? val : object[key] ;
         }
-    }
-}, {
-    op: '$currentDate',
-    logic: function(object, key, val) {
+    },
+    '$currentDate': (object, key, val) => {
         if (val) {
             object[key] = new Date();
         }
     }
-}];
+};
 
 /**
  * Transform containment operators ($in, $nin) to 'and', 'or' logical operations
@@ -216,15 +205,21 @@ function updateObject(originalObject, descriptor) {
         return originalObject;
     }
 
-    var object = util._extend(originalObject instanceof Array ? [] : {}, originalObject);
+    let object = util._extend(originalObject instanceof Array ? [] : {}, originalObject);
 
     if (!isUpdateDescriptor(descriptor)) {
         return descriptor && typeof descriptor === 'object' ? descriptor : object;
     }
 
-    UPDATE_OPS.forEach(function(operator) {
-        object = mutator(object, descriptor[operator.op], operator.logic);
-    });
+    // get updater operations
+    let operations = Object.keys(descriptor)
+        .map(opType => ({name: opType, transformation: UPDATE_OPS[opType]}))
+        .filter(op => op.transformation);
+
+    for (let operator of operations) {
+        object = mutate(object, descriptor[operator.name], operator.transformation);
+    }
+
 
     return object;
 }
@@ -233,30 +228,26 @@ function updateObject(originalObject, descriptor) {
  * Mutates the object according to the transform logic.
  *
  * @param {object} object Original entity object
- * @param {object} descObj Update descriptor
- * @param {function} transform Transformator function
+ * @param {object} operationDescription Update descriptor
+ * @param {function} transformation Transformator function
  * @returns {object}
  */
-function mutator(object, descObj, transform) {
-    if (!descObj) {
+function mutate(object, operationDescription, transformation) {
+    if (!operationDescription) {
         return object;
     }
 
-    if (object instanceof Array) {
-        object = object.map(function(item) {
-            Object.keys(descObj).forEach(function(key) {
-                transform(item, key, descObj[key]);
-            });
+    let isArray = Array.isArray(object);
+    let result = isArray ? object : [object];
 
-            return item;
-        });
-    } else {
-        Object.keys(descObj).forEach(function(key) {
-            transform(object, key, descObj[key]);
-        });
-    }
+    result = result.map(item => {
+        Object.keys(operationDescription)
+            .forEach(key => transformation(item, key, operationDescription[key]));
 
-    return object;
+        return item;
+    });
+
+    return isArray ? result : result[0];
 }
 
 /**
@@ -271,7 +262,7 @@ function isUpdateDescriptor(descriptor) {
     }
 
     var keys = Object.keys(descriptor);
-    var supportedOperators = UPDATE_OPS.map(function(operator) { return operator.op; });
+    var supportedOperators = Object.keys(UPDATE_OPS);
 
     return !util.arrayDiff(keys, supportedOperators).length;
 }

@@ -5,8 +5,8 @@ var util = require('./lib/util');
 /**
  * Connects and initializes the sheet db.
  *
- * @param {string} sheetId ID of the specific spreadsheet
- * @param {object} options Optional options.
+ * @param {string} sheetId - ID of the specific spreadsheet
+ * @param {object} options - Optional options.
  * @param {function} callback
  */
 function connect(sheetId, options, callback) {

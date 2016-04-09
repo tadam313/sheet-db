@@ -88,8 +88,8 @@ describe('Spreadsheet', function() {
             sheet.createWorksheet('test', spy);
 
             // assert
-            expect(spy).to.have.been.calledWith(null,
-                sinon.match.instanceOf(Worksheet)
+            expect(spy).to.have.been.calledWith(
+                null, sinon.match.instanceOf(Worksheet)
             );
         });
 

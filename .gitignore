@@ -4,3 +4,6 @@ test_local.js
 
 # IDE
 .idea
+
+# Build artifacts
+lib
