@@ -5,7 +5,6 @@ var apiFactory  = require('./api');
 var util        = require('./util');
 var request     = require('request');
 var cache       = require('memory-cache');
-var async       = require('async');
 
 var token = null;
 var api   = null;
@@ -17,9 +16,8 @@ var api   = null;
  *
  * @param {string} opType Type of the operation
  * @param {object} options Options of the operation
- * @param {function} callback
  */
-function executeRequest(opType, options, callback) {
+function executeRequest(opType, options) {
     if (token) {
         options.token = token;
     }
@@ -27,74 +25,42 @@ function executeRequest(opType, options, callback) {
     // TODO: need to handle ETAG values
     var context = api.getOperationContext(opType, options);
 
-    request(context, function(err, response, body) {
-        if (response.statusCode >= 300) {
-            err = new ApiError(response.statusCode, context, err);
-        }
-
-        return callback(err, body);
+    return new Promise((resolve, reject) => {
+        request(context, (err, response, body) => {
+            if (response.statusCode != 200) {
+                reject(new ApiError(response.statusCode, context, err));
+            } else {
+                resolve(body);
+            }
+        });
     });
 }
 
 /**
- * Handles the response with the specific transformation function
+ * Tries to fetch the response from the cache and provides fallback if not found
  *
- * @param {function} transformation Calls this function for the body
- * @param {function} callback
- * @param {object} err Error from the server operatio
- * @param {object} body Body of the response from Google Api
+ * @param {string} key - Key of the data in the cache
+ * @param {function} transformation - Transformation of the data
+ * @param {function} cacheMiss - Handler in case of the data is not found in the cache
  * @returns {*}
  */
-function handleResponse(transformation, callback, err, body) {
-    if (typeof callback !== 'function') {
-        return;
-    }
-
-    if (err) {
-        return callback(err);
-    }
-
-    var convertedData = null;
-
-    try {
-        convertedData = typeof transformation === 'function' ?
-            transformation.call(api, body) : body;
-    } catch (err) {
-        return callback(new Error('The response contains invalid data'));
-    }
-
-    return callback(null, convertedData);
-}
-
-/**
- * Tries to fetch the response from the cache and provides fallback if it is not found
- *
- * @param {string} key Key of the data in the cache
- * @param {function} callback
- * @param {function} transformation Transformation of the data
- * @param {function} cacheMiss Handler in case of the data is not found in the cache
- * @returns {*}
- */
-function fetchData(key, callback, transformation, cacheMiss) {
-    if (typeof callback !== 'function') {
-        return;
-    }
+async function fetchData(key, transformation, cacheMiss) {
 
     // TODO: needs better caching logic
     var data = cache.get(key);
 
     if (data) {
-        return callback(null, data);
+        return data;
     }
 
-    cacheMiss(handleResponse.bind({}, transformation, function(err, data) {
+    try {
+        data = transformation(await cacheMiss());
+    } catch (err) {
+        return Promise.reject(new Error('The response contains invalid data'));
+    }
 
-        if (data) {
-            cache.put(key, data);
-        }
-
-        return callback(err, data);
-    }));
+    cache.put(key, data);
+    return data;
 }
 
 /**
@@ -110,15 +76,13 @@ function setAccessToken(accessToken) {
  * Queries the specific sheet info.
  *
  * @param {string} sheetId
- * @param {function} callback
  */
-function querySheetInfo(sheetId, callback) {
+async function querySheetInfo(sheetId) {
     var key = util.createIdentifier('sheet_info', sheetId);
 
-    fetchData(key, callback, api.converter.sheetInfoResponse,
-        function(resolve) {
-            executeRequest('sheet_info', {sheetId: sheetId}, resolve);
-        });
+    return await fetchData(key, api.converter.sheetInfoResponse,
+        () =>  executeRequest('sheet_info', {sheetId: sheetId})
+    );
 }
 
 /**
@@ -126,18 +90,16 @@ function querySheetInfo(sheetId, callback) {
  *
  * @param {string} sheetId ID of the sheet
  * @param {object} options
- * @param {function} callback
  */
-function createWorksheet(sheetId, options, callback) {
-    var payload = api.converter.createWorksheetRequest(options);
-
-    executeRequest('create_worksheet', {
+async function createWorksheet(sheetId, options) {
+    let payload = api.converter.createWorksheetRequest(options);
+    let response = await executeRequest('create_worksheet', {
         body: payload,
         sheetId: sheetId
-    }, function(err, body) {
-        cache.clear();
-        handleResponse(null, callback, err, body);
     });
+
+    cache.clear();
+    return response;
 }
 
 /**
@@ -145,16 +107,15 @@ function createWorksheet(sheetId, options, callback) {
  *
  * @param {string} sheetId
  * @param {string} worksheetId
- * @param {function} callback
  */
-function dropWorksheet(sheetId, worksheetId, callback) {
-    executeRequest('drop_worksheet', {
+async function dropWorksheet(sheetId, worksheetId) {
+    let response = await executeRequest('drop_worksheet', {
         sheetId: sheetId,
         worksheetId: worksheetId
-    }, function(err, body) {
-        cache.clear();
-        handleResponse(null, callback, err, body);
     });
+
+    cache.clear();
+    return response;
 }
 
 /**
@@ -162,21 +123,21 @@ function dropWorksheet(sheetId, worksheetId, callback) {
  *
  * @param {string} worksheetInfo
  * @param {array} entries
- * @param {function} callback
  */
-function insertEntries(worksheetInfo, entries, callback) {
-
-    async.eachLimit(entries, 4, function(entry, callback) {
+async function insertEntries(worksheetInfo, entries) {
+    let requests = entries.map(entry => {
         var payload = util._extend(
             {body: api.converter.createEntryRequest(entry)},
             worksheetInfo
         );
 
-        executeRequest('create_entry', payload, callback);
-    }, function(err) {
-        cache.clear();
-        callback(err);
+        return executeRequest('create_entry', payload);
     });
+
+    let response = await Promise.all(requests);
+    cache.clear();
+
+    return response;
 }
 
 /**
@@ -184,15 +145,10 @@ function insertEntries(worksheetInfo, entries, callback) {
  *
  * @param {object} worksheetInfo SheetID and worksheetID
  * @param {array} entries
- * @param {function} callback
  */
-function updateEntries(worksheetInfo, entries, callback) {
+async function updateEntries(worksheetInfo, entries) {
 
-    if (!entries) {
-        return callback();
-    }
-
-    async.eachLimit(entries, 4, function(entry, callback) {
+    let requests = entries.map(entry => {
         var payload = util._extend({
                 body: api.converter.updateEntryRequest(entry),
                 entityId: entry._id
@@ -200,11 +156,13 @@ function updateEntries(worksheetInfo, entries, callback) {
             worksheetInfo
         );
 
-        executeRequest('update_entry', payload, callback);
-    }, function(err) {
-        cache.clear();
-        callback(err);
+        return executeRequest('update_entry', payload);
     });
+
+    let response = Promise.all(requests);
+    cache.clear();
+
+    return response;
 }
 
 /**
@@ -213,9 +171,8 @@ function updateEntries(worksheetInfo, entries, callback) {
  * @param {object} workSheetInfo worksheetInfo SheetID and worksheetID
  * @param {object} query Query descriptor
  * @param {object} options query options
- * @param {function} callback
  */
-function queryWorksheet(workSheetInfo, query, options, callback) {
+async function queryWorksheet(workSheetInfo, query, options) {
     var key = util.createIdentifier(
         workSheetInfo.worksheetId,
         JSON.stringify(query)
@@ -224,15 +181,16 @@ function queryWorksheet(workSheetInfo, query, options, callback) {
     options = options || {};
     options.query = query;
 
-    fetchData(key, callback, api.converter.queryResponse,
-        function(resolve) {
-
-            var payload = util._extend(
+    return await fetchData(
+        key,
+        api.converter.queryResponse,
+        () => {
+            let payload = util._extend(
                 workSheetInfo,
                 api.converter.queryRequest(options)
             );
 
-            executeRequest('query_worksheet', payload, resolve);
+            return executeRequest('query_worksheet', payload);
         });
 }
 
@@ -241,39 +199,41 @@ function queryWorksheet(workSheetInfo, query, options, callback) {
  *
  * @param {object} worksheetInfo worksheetInfo SheetID and worksheetID
  * @param {array} entityIds IDs of the entities
- * @param {function} callback
  */
-function deleteEntries(worksheetInfo, entityIds, callback) {
+async function deleteEntries(worksheetInfo, entityIds) {
 
     entityIds.reverse();
 
     // since google pushes up the removed row, the ID will change to the previous
     // avoiding this iterate through the collection in reverse order
     // TODO: needs performance improvement
-    async.eachLimit(entityIds, 1, function(id, callback) {
-        var payload = util._extend({entityId: id}, worksheetInfo);
-        executeRequest('delete_entry', payload, callback);
-    }, function(err) {
-        cache.clear();
-        callback(err);
-    });
+    var response;
+
+    for (let id of entityIds) {
+        let payload = util._extend({entityId: id}, worksheetInfo);
+        response = await executeRequest('delete_entry', payload);
+    }
+
+    cache.clear();
+    return response;
 }
 
 /**
  * Queries the fields from the spreadsheet
  *
  * @param {object} workSheetInfo SheetID and worksheetID
- * @param {function} callback
  */
-function queryFields(workSheetInfo, callback) {
+async function queryFields(workSheetInfo) {
     var key = util.createIdentifier(
         'queryFields',
         workSheetInfo.worksheetId
     );
 
-    fetchData(key, callback, api.converter.queryFieldNames,
-        function(resolve) {
-            executeRequest('query_fields', workSheetInfo, resolve);
+    return await fetchData(
+        key,
+        api.converter.queryFieldNames,
+        () => {
+            return executeRequest('query_fields', workSheetInfo);
         });
 }
 
@@ -283,28 +243,27 @@ function queryFields(workSheetInfo, callback) {
  * @param {object} workSheetInfo SheetID and worksheetID
  * @param {array} fieldNames Name of the fields
  * @param {number} startIndex First column of new rows
- * @param {function} callback
  */
-function createColumns(workSheetInfo, fieldNames, startIndex, callback) {
+async function createColumns(workSheetInfo, fieldNames, startIndex) {
     if (!util.isArray(fieldNames)) {
-        return callback(
+        return Promise.reject(
             new Error('Field names should be specified in array format')
         );
     }
 
-    async.eachLimit(fieldNames, 4, function(fieldName, callback) {
-        var payload = api.converter.createFieldRequest(fieldName, ++startIndex);
-
-        var requestPayload = util._extend(
+    let promises = fieldNames.map(fieldName => {
+        let payload = api.converter.createFieldRequest(fieldName, ++startIndex);
+        let requestPayload = util._extend(
             {body: payload, cellId: 'R1C' + startIndex},
             workSheetInfo
         );
 
-        executeRequest('create_field', requestPayload, callback);
-    }, function(err) {
-        cache.clear();
-        callback(err);
+        return executeRequest('create_field', requestPayload);
     });
+
+    let response = await Promise.all(promises);
+    cache.clear();
+    return response;
 }
 
 function getApi() {

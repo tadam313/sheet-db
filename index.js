@@ -1,3 +1,6 @@
+// require necessary polyfills
+require("babel-polyfill");
+
 var Spreadsheet = require('./lib/spreadsheet');
 var clientFactory = require('./lib/rest_client');
 var util = require('./lib/util');
