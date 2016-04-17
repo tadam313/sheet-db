@@ -1,5 +1,7 @@
 'use strict';
 
+require("babel-polyfill");
+
 var sampleQueryResponse = require('./fixtures/v3/sample_query');
 var sampleSheetInfo = require('./fixtures/v3/sample_sheet_info');
 var sampleFieldNames = require('./fixtures/v3/sample_query_fieldnames');

@@ -9,8 +9,8 @@
   },
   "scripts": {
     "start": "node dev/request_token.js",
-    "test": "npm run compile && make test",
-    "compile": "babel --presets es2015,stage-0 -d lib/ src/",
+    "test": "make",
+    "compile": "make compile",
     "prepublish": "npm run compile"
   },
   "keywords": [
@@ -41,6 +41,7 @@
     "mocha": "*",
     "prompt": "^0.2.14",
     "sinon": "^1.14.1",
+    "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.7.0"
   }
 }

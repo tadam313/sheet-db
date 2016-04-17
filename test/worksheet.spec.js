@@ -1,11 +1,14 @@
 'use strict';
 
+require("babel-polyfill");
+
 var Worksheet = require('../lib/worksheet');
 var clientFactory = require('../lib/rest_client');
 var query = require('../lib/query');
 var testUtil = require('./test_util');
 var chai = require('chai');
 var sinon = require('sinon');
+require('sinon-as-promised');
 
 var sampleQueryResponse = require('./fixtures/v3/sample_query');
 var sampleFieldQueryResponse = require('./fixtures/v3/sample_query_fieldnames');
@@ -27,22 +30,15 @@ describe('Worksheet', function() {
 
     beforeEach(function() {
         queryWorksheetStub = sinon.stub(restClient, 'queryWorksheet');
-        queryWorksheetStub.yields(null, restClient.getApi().converter.queryResponse(sampleQueryResponse));
+        queryWorksheetStub.resolves(restClient.getApi().converter.queryResponse(sampleQueryResponse));
 
         queryFieldsStub = sinon.stub(restClient, 'queryFields');
-        queryFieldsStub.yields(null, restClient.getApi().converter.queryFieldNames(sampleFieldQueryResponse));
+        queryFieldsStub.resolves(restClient.getApi().converter.queryFieldNames(sampleFieldQueryResponse));
 
         insertEntriesStub = sinon.stub(restClient, 'insertEntries');
-        insertEntriesStub.yields(null);
-
         updateEntriesStub = sinon.stub(restClient, 'updateEntries');
-        updateEntriesStub.yields(null);
-
         deleteEntriesStub = sinon.stub(restClient, 'deleteEntries');
-        deleteEntriesStub.yields(null);
-
         createColumnsStub = sinon.stub(restClient, 'createColumns');
-        createColumnsStub.yields(null);
 
         spy = sinon.spy();
         worksheet = new Worksheet('test', {}, restClient);
@@ -59,75 +55,69 @@ describe('Worksheet', function() {
 
     describe('#find', function() {
 
-        it('should list the whole worksheet if selector is empty', function() {
+        it('should list the whole worksheet if selector is empty', function*() {
             // arrange
-            var selector = {};
+            let selector = {};
 
             // act
-            worksheet.find(selector, spy);
+            let result = yield worksheet.find(selector);
 
             // assert
             expect(queryWorksheetStub).to.have.been.calledOnce;
-            expect(spy).to.have.been.calledWithExactly(null, [
+            expect(result).to.be([
                 sinon.match({_id: 'this_is_an_entryId_1'}),
                 sinon.match({_id: 'this_is_an_entryId_2'}),
                 sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
         });
 
-        it('should limit collection', function() {
+        it('should limit collection', function*() {
             // arrange
-            var options = {limit: 2};
+            let options = {limit: 2};
 
             // act
-            worksheet.find(null, options, spy);
+            let result = yield worksheet.find(null, options);
 
             //assert
-            expect(spy).to.have.been.calledWithExactly(null, [
+            expect(result).to.be([
                 sinon.match({_id: 'this_is_an_entryId_1'}),
                 sinon.match({_id: 'this_is_an_entryId_2'})
             ]);
         });
 
-        it('should skip items', function() {
+        it('should skip items', function*() {
             // arrange
             var options = {skip: 2};
 
             // act
-            worksheet.find(null, options, spy);
+            let result = yield worksheet.find(null, options);
 
             //assert
-            expect(spy).to.have.been.calledWithExactly(null, [
+            expect(result).to.be([
                 sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
         });
 
-        it('should filter properly also on the client side', function() {
+        it('should filter properly also on the client side', function*() {
             // act
-            worksheet.find({field1: {$gte: 2}}, spy);
+            let result = yield worksheet.find({field1: {$gte: 2}}, spy);
 
             //assert
-            expect(spy).to.have.been.calledWithExactly(null, [
+            expect(spy).to.be([
                 sinon.match({_id: 'this_is_an_entryId_2'}),
                 sinon.match({_id: 'this_is_an_entryId_3'})
             ]);
-        });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(queryWorksheetStub, function(spy) {
-                worksheet.find(spy);
-            });
         });
     });
 
     describe('#insert', function() {
 
-        it('should call the api', function() {
+        it('should call the api', function*() {
             // arrange
-            var entry = {field1: 3, field2: 10};
+            let entry = {field1: 3, field2: 10};
 
             // act
-            worksheet.insert(entry, testUtil.identFunc);
+            yield worksheet.insert(entry, testUtil.identFunc);
 
             // assert
             expect(queryFieldsStub).to.have.been.calledOnce;
@@ -138,20 +128,20 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should handle null values', function() {
+        it('should handle null values', function*() {
             // act
-            worksheet.insert(null, spy);
+            yield worksheet.insert(null, spy);
 
             // assert
             expect(spy).to.have.been.called;
         });
 
-        it('should insert columns if the sheet does not contain them', function() {
+        it('should insert columns if the sheet does not contain them', function*() {
             // arrange
-            var entry = {field1: 3, field3: 10, field5: 20};
+            let entry = {field1: 3, field3: 10, field5: 20};
 
             // act
-            worksheet.insert(entry, testUtil.identFunc);
+            yield worksheet.insert(entry, testUtil.identFunc);
 
             // assert
             expect(queryFieldsStub).to.have.been.calledOnce;
@@ -166,21 +156,15 @@ describe('Worksheet', function() {
                 {sheetId: 'test'}, ['field3', 'field5']
             );
         });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(insertEntriesStub, function(spy) {
-                worksheet.insert({}, spy);
-            });
-        });
     });
 
     describe('#update', function() {
 
-        it('should call the api', function() {
-            var entry = {field1: 'test'};
+        it('should call the api', function*() {
+            let entry = {field1: 'test'};
 
             // act
-            worksheet.update({field1: 1}, entry, testUtil.identFunc);
+            yield worksheet.update({field1: 1}, entry, testUtil.identFunc);
 
             // assert
             expect(updateEntriesStub).to.have.been.calledOnce;
@@ -189,13 +173,13 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should update only single entity by default', function() {
+        it('should update only single entity by default', function*() {
             // arrange
             var findStub = sinon.stub(worksheet, 'find');
-            findStub.yields(null, [{}]);
+            findStub.resolves([{}]);
 
             // act
-            worksheet.update(null, null, testUtil.identFunc);
+            yield worksheet.update(null, null, testUtil.identFunc);
 
             // assert
             expect(updateEntriesStub).to.have.been.calledOnce;
@@ -206,13 +190,13 @@ describe('Worksheet', function() {
             findStub.restore();
         });
 
-        it('should have the ability to update multiple entities', function() {
+        it('should have the ability to update multiple entities', function*() {
             // arrange
-            var findStub = sinon.stub(worksheet, 'find');
-            findStub.yields(null, [{}]);
+            let findStub = sinon.stub(worksheet, 'find');
+            findStub.resolves([{}]);
 
             // act
-            worksheet.update(null, null, {multiple: true}, testUtil.identFunc);
+            yield worksheet.update(null, null, {multiple: true}, testUtil.identFunc);
 
             // assert
             expect(updateEntriesStub).to.have.been.calledOnce;
@@ -223,14 +207,14 @@ describe('Worksheet', function() {
             findStub.restore();
         });
 
-        it('should insert value if not exists and upsert option is set', function() {
+        it('should insert value if not exists and upsert option is set', function*() {
             // arrange
-            var entry = {field1: 1};
-            var findStub = sinon.stub(worksheet, 'find');
-            findStub.yields(null, []);
+            let entry = {field1: 1};
+            let findStub = sinon.stub(worksheet, 'find');
+            findStub.resolves([]);
 
             // act
-            worksheet.update(null, entry, {upsert: true}, testUtil.identFunc);
+            yield worksheet.update(null, entry, {upsert: true}, testUtil.identFunc);
 
             // assert
             expect(updateEntriesStub).to.not.have.been.called;
@@ -241,36 +225,30 @@ describe('Worksheet', function() {
             findStub.restore();
         });
 
-        it('should NOT insert value if not exists and upsert option is NOT set', function() {
+        it('should NOT insert value if not exists and upsert option is NOT set', function*() {
             // arrange
-            var entry = {field1: 1};
-            var findStub = sinon.stub(worksheet, 'find');
-            findStub.yields(null, []);
+            let entry = {field1: 1};
+            let findStub = sinon.stub(worksheet, 'find');
+            findStub.resolves(null, []);
 
             // act
-            worksheet.update(null, entry, testUtil.identFunc);
+            yield worksheet.update(null, entry, testUtil.identFunc);
 
             // assert
             expect(updateEntriesStub).to.not.have.been.called;
             expect(insertEntriesStub).to.not.have.been.called;
             findStub.restore();
         });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(updateEntriesStub, function(spy) {
-                worksheet.update(null, null, spy);
-            });
-        });
     });
 
     describe('#remove', function() {
 
-        it('should call the api', function() {
+        it('should call the api', function*() {
             // arrange
-            var selector = {field1: 1};
+            let selector = {field1: 1};
 
             // act
-            worksheet.remove(selector, testUtil.identFunc);
+            yield worksheet.remove(selector, testUtil.identFunc);
 
             // assert
             expect(deleteEntriesStub).to.have.been.calledOnce;
@@ -279,12 +257,12 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should directly call deleteEntry without find if selector contains only _id (performance...)', function() {
+        it('should directly call deleteEntry without find if selector contains only _id (performance...)', function*() {
             // arrange
-            var selector = {_id: 'test'};
+            let selector = {_id: 'test'};
 
             // act
-            worksheet.remove(selector, testUtil.identFunc);
+            yield worksheet.remove(selector, testUtil.identFunc);
 
             // assert
             expect(deleteEntriesStub).to.have.been.calledOnce;
@@ -294,24 +272,18 @@ describe('Worksheet', function() {
             );
         });
 
-        it('should delete only one entity if justOne is set', function() {
+        it('should delete only one entity if justOne is set', function*() {
             // arrange
-            var selector = {field1: {$in: [1, 2, 3]}};
+            let selector = {field1: {$in: [1, 2, 3]}};
 
             // act
-            worksheet.remove(selector, {justOne: true}, testUtil.identFunc);
+            yield worksheet.remove(selector, {justOne: true}, testUtil.identFunc);
 
             // assert
             expect(deleteEntriesStub).to.have.been.calledOnce;
             expect(deleteEntriesStub).to.have.been.calledWith(
                 {sheetId: 'test'}, ['this_is_an_entryId_1']
             );
-        });
-
-        it('should reports api error', function() {
-            testUtil.assertFuncReportsError(deleteEntriesStub, function(spy) {
-                worksheet.remove(spy);
-            });
         });
     });
 });

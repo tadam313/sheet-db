@@ -1,3 +1,7 @@
+'use strict';
+
+require("babel-polyfill");
+
 var chai = require('chai');
 var sinon = require('sinon');
 var chaiXml = require('chai-xml');
