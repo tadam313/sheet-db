@@ -59,10 +59,10 @@ var UPDATE_OPS = {
  * @returns {object} Translated query
  */
 function containmentOperator(queryObject, actualField, key) {
-    var substitution = {};
+    let substitution = {};
 
-    substitution[key === '$in' ? '$or' : '$and'] = queryObject.map(function(value) {
-        var expression = {};
+    substitution[key === '$in' ? '$or' : '$and'] = queryObject.map(value => {
+        let expression = {};
         expression[actualField] = {};
         expression[actualField][key === '$in' ? '$eq' : '$ne'] = value;
 
@@ -95,9 +95,9 @@ function binaryOperator(queryObject, actualField, key) {
  * @returns {string}
  */
 function logicalOperator(queryObject, actualField, key) {
-    var textQuery = '(';
+    let textQuery = '(';
 
-    for (var i = 0; i < queryObject.length; i++) {
+    for (let i = 0; i < queryObject.length; i++) {
         textQuery += (i > 0 ? OPS[key] : '') + stringify(queryObject[i], actualField);
     }
 
@@ -129,7 +129,7 @@ function handleValue(value) {
     // object is a literal
 
     if (typeof value === 'string') {
-        value = '"' + value + '"';
+        value = `"${value}"`;
     }
 
     return value;
@@ -147,10 +147,10 @@ function handleValue(value) {
 function stringify(query, actualField) {
     query = query || {};
 
-    var key = typeof query === 'object' ? Object.keys(query)[0] : null;
-    var textQuery = '';
+    let key = typeof query === 'object' ? Object.keys(query)[0] : null;
+    let textQuery = '';
 
-    var queryObject = query[key];
+    let queryObject = query[key];
 
     switch (key) {
 
@@ -170,7 +170,7 @@ function stringify(query, actualField) {
 
         case '$in':
         case '$nin':
-            var exp = containmentOperator(queryObject, actualField, key);
+            let exp = containmentOperator(queryObject, actualField, key);
             textQuery += stringify(exp, actualField);
             break;
 
@@ -261,8 +261,8 @@ function isUpdateDescriptor(descriptor) {
         return false;
     }
 
-    var keys = Object.keys(descriptor);
-    var supportedOperators = Object.keys(UPDATE_OPS);
+    let keys = Object.keys(descriptor);
+    let supportedOperators = Object.keys(UPDATE_OPS);
 
     return !util.arrayDiff(keys, supportedOperators).length;
 }

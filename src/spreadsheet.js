@@ -1,7 +1,6 @@
 'use strict';
 
-var Worksheet      = require('./worksheet');
-var util           = require('./util');
+var Worksheet = require('./worksheet');
 
 
 class Spreadsheet {
@@ -74,7 +73,7 @@ class Spreadsheet {
         let worksheet = this.worksheet(title);
 
         return await this.api.dropWorksheet(
-            this.sheetId, 
+            this.sheetId,
             worksheet.worksheetInfo.worksheetId
         );
     }

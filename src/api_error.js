@@ -13,14 +13,7 @@ class ApiError extends Error {
      * @constructor
      */
     constructor(statusCode, requestContext, innerError) {
-        message = ''
-
-        if (innerError) {
-            message += ' {' + innerError.message + '}';
-        }
-
-        super(message)
-
+        super(`${innerError ? innerError.message : ''}`)
         this.status = statusCode;
         this.context = requestContext;
         this.message = this.statusDescription() + this.message;

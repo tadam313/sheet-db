@@ -23,13 +23,13 @@ function isNaN(value) {
  * @returns {*}
  */
 function coerceNumber(value) {
-    var isfloat = /^\d*(\.|,)\d*$/;
+    let isfloat = /^\d*(\.|,)\d*$/;
 
     if (isfloat.test(value)) {
         value = value.replace(',', '.');
     }
 
-    var numberValue = Number(value);
+    let numberValue = Number(value);
     return numberValue == value || !value ? numberValue : value
 }
 
@@ -41,7 +41,7 @@ function coerceNumber(value) {
  * @returns {*}
  */
 function coerceDate(value) {
-    var timestamp = Date.parse(value);
+    let timestamp = Date.parse(value);
 
     if (!isNaN(timestamp)) {
         return new Date(timestamp);
@@ -59,7 +59,7 @@ function coerceDate(value) {
  */
 function coerceValue(value) {
 
-    var numValue = coerceNumber(value);
+    let numValue = coerceNumber(value);
 
     if (numValue === value) {
         return coerceDate(value);
@@ -75,11 +75,9 @@ function coerceValue(value) {
  * @returns {array}
  */
 function getArrayFields(array) {
-    return (array || []).reduce(function(old, current) {
+    return (array || []).reduce((old, current) => {
         arrayDiff(Object.keys(current), old)
-            .forEach(function(key) {
-                old.push(key);
-            });
+            .forEach(key => old.push(key));
 
         return old;
     }, []);
@@ -111,51 +109,6 @@ function createIdentifier() {
     return Array.prototype.slice.call(arguments).join('_');
 }
 
-/**
- * Creates variations of a specified function
- *
- * @param {array} versions Possible argument combination of the function
- * @param {function} subject Target function
- * @returns {function}
- */
-function variations(versions, subject) {
-
-    if (typeof subject !== 'function' || !(versions instanceof Array)) {
-        return subject;
-    }
-
-    var matches = /\(([\w,\s]*)\)/.exec(subject.toString());
-
-    if (!matches || matches.length < 2) {
-        return subject;
-    }
-
-    var functionArguments = matches[1].split(',').map(function(item) {
-        return item.trim();
-    });
-
-    return function() {
-        var args = Array.prototype.slice.call(arguments);
-        var newArgs = [];
-
-        var version = versions.filter(function(version) {
-            return version.length === args.length;
-        });
-
-        if (!version.length) {
-            return subject.apply(this, arguments);
-        }
-
-        version = version[0];
-
-        version.forEach(function(item, index) {
-            var position = functionArguments.indexOf(item);
-            newArgs[position] = args[index];
-        });
-
-        return subject.apply(this, newArgs);
-    };
-}
 
 module.exports = util._extend(util, {
     isNaN: isNaN,
@@ -164,6 +117,5 @@ module.exports = util._extend(util, {
     coerceValue: coerceValue,
     getArrayFields: getArrayFields,
     arrayDiff: arrayDiff,
-    createIdentifier: createIdentifier,
-    variations: variations
+    createIdentifier: createIdentifier
 });
