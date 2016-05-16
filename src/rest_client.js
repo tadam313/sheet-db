@@ -81,7 +81,7 @@ async function querySheetInfo(sheetId) {
     var key = util.createIdentifier('sheet_info', sheetId);
 
     return await fetchData(key, api.converter.sheetInfoResponse,
-        () =>  executeRequest('sheet_info', {sheetId: sheetId})
+        () => executeRequest('sheet_info', {sheetId: sheetId})
     );
 }
 

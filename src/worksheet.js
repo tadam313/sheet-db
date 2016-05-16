@@ -17,7 +17,6 @@ class Worksheet {
     constructor(sheetId, worksheetInfo, api) {
         this.worksheetInfo = worksheetInfo || {};
         this.api = api;
-
         this.worksheetInfo.sheetId = sheetId;
     }
 
@@ -29,6 +28,7 @@ class Worksheet {
      */
     async find(query, options) {
         options = options || {};
+        query = query || {};
 
         let sq = queryHelper.stringify(query);
         let response = await this.api.queryWorksheet(this.worksheetInfo, sq, options);
@@ -37,13 +37,11 @@ class Worksheet {
             let skip = Math.max(options.skip || 0, 0);
             let limit = Math.max(options.limit || Number.MAX_VALUE, 0);
             let picked = 0;
-    
-            response = response.filter(
-                (item, index) => index >= skip && ++picked <= limit
-            );
+
+            response = response.filter((item, index) => index >= skip && ++picked <= limit);
         }
-    
-        return sift(query || {}, response)
+
+        return sift(query, response)
     }
 
     /**
@@ -61,7 +59,7 @@ class Worksheet {
             util.getArrayFields(entries),
             await this._listColumns()
         );
-        
+
         return await this.api.insertEntries(this.worksheetInfo, entries);
     }
 
@@ -76,15 +74,16 @@ class Worksheet {
     async update(selector, update, options) {
         options = options || {};
         let findOptions = {limit: options.multiple ? Number.MAX_VALUE : 1};
-
         let result = await this.find(selector, findOptions);
-        
-        if (!result.length && options.upsert) {
-            return await this.api.insertEntries(this.worksheetInfo, update);
+
+        if (result.length) {
+            let entries = queryHelper.updateObject(result, update);
+            return await this.api.updateEntries(this.worksheetInfo, entries);
         }
 
-        let entries = queryHelper.updateObject(result, update);
-        return await this.api.updateEntries(this.worksheetInfo, entries);
+        if (options.upsert) {
+            return await this.api.insertEntries(this.worksheetInfo, update);
+        }
     }
 
     /**
@@ -103,7 +102,7 @@ class Worksheet {
 
         let findOptions = {limit: options.justOne ? 1 : Number.MAX_VALUE};
         let result = await this.find(selector, findOptions);
-        
+
         return await this.api.deleteEntries(
             this.worksheetInfo,
             result.map(item => item['_id'])
@@ -130,8 +129,8 @@ class Worksheet {
         );
 
         return await this.api.createColumns(
-            this.worksheetInfo, 
-            newColumns, 
+            this.worksheetInfo,
+            newColumns,
             actualColumns.length
         );
     }

@@ -13,6 +13,10 @@ require('sinon-as-promised');
 var sampleQueryResponse = require('./fixtures/v3/sample_sheet_info');
 
 chai.use(require('sinon-chai'));
+chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
+
 var expect = chai.expect;
 
 describe('Spreadsheet', function() {
@@ -23,19 +27,18 @@ describe('Spreadsheet', function() {
     var querySheetInfoStub;
     var createWorksheetStub;
     var dropWorksheetStub;
-    var spy;
 
     beforeEach(function() {
         restClient = clientFactory('test');
         sheet = new Spreadsheet(sheetTitle, restClient, {token: 'test'});
 
         querySheetInfoStub = sinon.stub(restClient, 'querySheetInfo');
-        querySheetInfoStub.resolves(restClient.getApi().converter.sheetInfoResponse(sampleQueryResponse));
+        querySheetInfoStub.resolves(
+            restClient.getApi().converter.sheetInfoResponse(sampleQueryResponse)
+        );
 
         createWorksheetStub = sinon.stub(restClient, 'createWorksheet');
         dropWorksheetStub = sinon.stub(restClient, 'dropWorksheet');
-
-        spy = sinon.spy();
     });
 
     afterEach(function() {
@@ -52,60 +55,91 @@ describe('Spreadsheet', function() {
 
             // assert
             expect(querySheetInfoStub).to.have.been.calledWith(sheetTitle);
-            expect(res).to.match({title: 'Test'})
+        });
+
+        it('should provide expected result', function*() {
+            // act
+            let res = yield sheet.info();
+
+            // assert
+            expect(res).to.containSubset({
+                title: 'Test',
+                updated: new Date('2015-04-02T21:25:42.467Z'),
+                authors: [{
+                    email: 'author_name@tempuri.org',
+                    name: 'author_name'
+                }]
+            });
+        });
+
+        it('should return worksheet instances', function*() {
+           // act
+            let info = yield sheet.info();
+
+            // assert
+            expect(info.workSheets).to.have.lengthOf(3);
+            expect(info.workSheets).all.to.be.an.instanceOf(Worksheet);
         });
     });
 
     describe('#createWorksheet', function() {
 
-        it('should call api', function*() {
+        it('should create worksheet if it does not exist', function*() {
             // act
-            yield sheet.createWorksheet('test', spy);
+            let worksheet = yield sheet.createWorksheet('non-existent');
 
             // assert
-            expect(createWorksheetStub).to.have.been.calledWith(
-                sheetTitle
-            );
+            expect(createWorksheetStub).to.have.been.calledWith(sheetTitle);
+            expect(worksheet).to.be.instanceof(Worksheet);
         });
 
-        it('should return worksheet instance', function*() {
-            // arrange
-            var worksheetStub = sinon.stub(sheet, 'worksheet');
-            worksheetStub.resolves(new Worksheet('test', {}, restClient));
-
+        it('should not create a worksheet if "create_if_not_exists" flag is disabled', function*() {
             // act
-            let res = yield sheet.createWorksheet('test', spy);
+            let worksheet = yield sheet.createWorksheet('Sheet1');
 
             // assert
-            expect(res).to.match(sinon.match.instanceOf(Worksheet));
+            expect(createWorksheetStub).to.have.not.been.called;
         });
+
     });
 
     describe('#dropWorksheet', function() {
 
-        it('should call api', function*() {
+        it('should delete worksheet if it does exist', function*() {
             // act
             yield sheet.dropWorksheet('Sheet1');
 
             // assert
-            expect(dropWorksheetStub).to.have.been.calledWith(
-                sheetTitle, 'worksheetId_1'
-            );
+            expect(dropWorksheetStub).to.have.been.calledWith(sheetTitle, 'worksheetId_1');
         });
 
-        // TODO: should raise error if sheet does not exist
+        it('should not delete worksheet if it does not exist', function*() {
+            // act
+            yield sheet.dropWorksheet('non-existent');
+
+            // assert
+            expect(dropWorksheetStub).to.have.not.been.called;
+        });
     });
+
 
     describe('#worksheet', function() {
 
-        // TODO: should return worksheet
-
-        it('should raise error if sheet does not exist', function() {
+        it('should return worksheet instance', function*() {
             // act
-            let underTest = sheet.worksheet.bind('test', spy);
+            let worksheet = yield sheet.worksheet('Sheet1');
 
             // assert
-            expect(underTest).to.throw(Error);
+            expect(worksheet).to.be.instanceof(Worksheet);
         });
+
+        it('should return null if worksheet does not exist', function*() {
+            // act
+            let worksheet = yield sheet.worksheet('not-exists');
+
+            // assert
+            expect(worksheet).to.not.exist;
+        });
+
     });
 });

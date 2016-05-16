@@ -14,13 +14,14 @@ var sampleQueryResponse = require('./fixtures/v3/sample_query');
 var sampleFieldQueryResponse = require('./fixtures/v3/sample_query_fieldnames');
 
 chai.use(require('sinon-chai'));
+chai.use(require('chai-things'));
+chai.use(require('chai-subset'));
 var expect = chai.expect;
 
 describe('Worksheet', function() {
 
     var worksheet;
     var restClient = clientFactory();
-    var spy;
     var queryWorksheetStub;
     var queryFieldsStub;
     var insertEntriesStub;
@@ -40,7 +41,6 @@ describe('Worksheet', function() {
         deleteEntriesStub = sinon.stub(restClient, 'deleteEntries');
         createColumnsStub = sinon.stub(restClient, 'createColumns');
 
-        spy = sinon.spy();
         worksheet = new Worksheet('test', {}, restClient);
     });
 
@@ -64,48 +64,52 @@ describe('Worksheet', function() {
 
             // assert
             expect(queryWorksheetStub).to.have.been.calledOnce;
-            expect(result).to.be([
-                sinon.match({_id: 'this_is_an_entryId_1'}),
-                sinon.match({_id: 'this_is_an_entryId_2'}),
-                sinon.match({_id: 'this_is_an_entryId_3'})
+            expect(result).all.to.containSubset([
+                {_id: 'this_is_an_entryId_1'},
+                {_id: 'this_is_an_entryId_2'},
+                {_id: 'this_is_an_entryId_3'}
             ]);
         });
 
         it('should limit collection', function*() {
             // arrange
-            let options = {limit: 2};
+            let limitation = 2;
+            let options = {limit: limitation};
 
             // act
             let result = yield worksheet.find(null, options);
 
             //assert
-            expect(result).to.be([
-                sinon.match({_id: 'this_is_an_entryId_1'}),
-                sinon.match({_id: 'this_is_an_entryId_2'})
+            expect(result).to.have.lengthOf(limitation);
+            expect(result).all.to.containSubset([
+                {_id: 'this_is_an_entryId_1'},
+                {_id: 'this_is_an_entryId_2'}
             ]);
         });
 
         it('should skip items', function*() {
             // arrange
-            var options = {skip: 2};
+            let skip = 2;
+            let options = {skip: skip};
 
             // act
             let result = yield worksheet.find(null, options);
 
             //assert
-            expect(result).to.be([
-                sinon.match({_id: 'this_is_an_entryId_3'})
+            expect(result).to.have.lengthOf(3 - skip);
+            expect(result).all.to.containSubset([
+                {_id: 'this_is_an_entryId_3'}
             ]);
         });
 
         it('should filter properly also on the client side', function*() {
             // act
-            let result = yield worksheet.find({field1: {$gte: 2}}, spy);
+            let result = yield worksheet.find({field1: {$gte: 2}});
 
             //assert
-            expect(spy).to.be([
-                sinon.match({_id: 'this_is_an_entryId_2'}),
-                sinon.match({_id: 'this_is_an_entryId_3'})
+            expect(result).all.to.containSubset([
+                {_id: 'this_is_an_entryId_2'},
+                {_id: 'this_is_an_entryId_3'}
             ]);
         });
     });
@@ -126,14 +130,6 @@ describe('Worksheet', function() {
                 {sheetId: 'test'},
                 [{field1: 3, field2: 10}]
             );
-        });
-
-        it('should handle null values', function*() {
-            // act
-            yield worksheet.insert(null, spy);
-
-            // assert
-            expect(spy).to.have.been.called;
         });
 
         it('should insert columns if the sheet does not contain them', function*() {
@@ -229,10 +225,10 @@ describe('Worksheet', function() {
             // arrange
             let entry = {field1: 1};
             let findStub = sinon.stub(worksheet, 'find');
-            findStub.resolves(null, []);
+            findStub.resolves([]);
 
             // act
-            yield worksheet.update(null, entry, testUtil.identFunc);
+            yield worksheet.update(null, entry);
 
             // assert
             expect(updateEntriesStub).to.not.have.been.called;

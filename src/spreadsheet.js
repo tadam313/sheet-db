@@ -17,7 +17,6 @@ class Spreadsheet {
         this.sheetId = sheetId;
         this.api = restClient;
         this.options = options;
-
         this.workSheets = null;
     }
 
@@ -26,37 +25,27 @@ class Spreadsheet {
      */
     async info() {
         let sheetInfo = await this.api.querySheetInfo(this.sheetId);
-
-        // save the worksheets
-        this.workSheets = sheetInfo.workSheets;
+        sheetInfo.workSheets = sheetInfo.workSheets
+            .map(sheet => new Worksheet(this.sheetId, sheet, this.api));
 
         return sheetInfo;
     }
 
     /**
-     * Creates worksheet with specific title.
+     * Creates the specific worksheet.
      *
-     * @param {string} title Name of the worksheet
-     * @param {object} options Optional options
+     * @param {string} title Name of the worksheet.
+     * @param {object} options Additional options for the worksheet
      */
     async createWorksheet(title, options) {
+        let worksheet = await this.worksheet(title);
 
-        if (!this.api.isAuthenticated()) {
-            throw new Error('This operation requires authentication');
+        if (!worksheet) {
+            let worksheetInfo = await this.api.createWorksheet(this.sheetId, options);
+            worksheet = new Worksheet(this.sheetId, worksheetInfo, this.api);
         }
 
-        if (this.workSheets) {
-            var res = this.workSheets.filter(ws => ws.title === title);
-
-            if (res.length > 0) {
-                return this.worksheet(title, callback);
-            }
-        }
-
-        options = options || {};
-        options.title = title;
-
-        return await this.api.createWorksheet(this.sheetId, options);
+        return worksheet;
     }
 
     /**
@@ -70,7 +59,11 @@ class Spreadsheet {
             throw new Error('This operation requires authentication');
         }
 
-        let worksheet = this.worksheet(title);
+        let worksheet = await this.worksheet(title, false);
+
+        if (!worksheet) {
+            return;
+        }
 
         return await this.api.dropWorksheet(
             this.sheetId,
@@ -79,21 +72,21 @@ class Spreadsheet {
     }
 
     /**
-     * Retrieves the specific worksheet instance. If info was called previously it returns immediatelly
-     * with the specific instance (also with callback), but if it's not the case it returns null and returns worksheet
-     * with callback.
+     * Retrieves the specific worksheet instance.
      *
      * @param {string} title Title of the worksheet
      * @returns {Worksheet}
      */
-    worksheet(title) {
-        var sheets = this.workSheets.filter(item => item.title === title);
+    async worksheet(title) {
+        let sheetInfo = await this.info();
+        let sheets = sheetInfo.workSheets.filter(item => item.worksheetInfo.title === title);
+        let worksheet;
 
-        if (!sheets.length) {
-            throw new Error('Sheet does not exist');
+        if (sheets.length) {
+            worksheet = sheets[0];
         }
 
-        return new Worksheet(this.sheetId, sheets[0], this.api);
+        return worksheet;
     }
 
     /**

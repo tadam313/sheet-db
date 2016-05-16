@@ -139,12 +139,7 @@ function sheetInfoResponse(rawData) {
         title: g(feed.title),
         updated: g(feed.updated),
         workSheets: feed.entry.map(worksheetData),
-        authors: feed.author.map(function(item) {
-            return {
-                name: g(item.name),
-                email: g(item.email)
-            };
-        })
+        authors: feed.author.map(item => ({ name: g(item.name), email: g(item.email) }))
     };
 }
 
