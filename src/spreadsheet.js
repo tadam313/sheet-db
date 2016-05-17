@@ -17,7 +17,6 @@ class Spreadsheet {
         this.sheetId = sheetId;
         this.api = restClient;
         this.options = options;
-        this.workSheets = null;
     }
 
     /**

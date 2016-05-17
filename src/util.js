@@ -95,9 +95,7 @@ function arrayDiff(arrayTarget, arrayCheck) {
         throw new Error('Both objects have to be an array');
     }
 
-    return arrayTarget.filter(function(item) {
-        return !~arrayCheck.indexOf(item);
-    })
+    return arrayTarget.filter(item => !~arrayCheck.indexOf(item));
 }
 
 /**

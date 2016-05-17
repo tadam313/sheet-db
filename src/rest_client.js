@@ -56,7 +56,7 @@ async function fetchData(key, transformation, cacheMiss) {
     try {
         data = transformation(await cacheMiss());
     } catch (err) {
-        return Promise.reject(new Error('The response contains invalid data'));
+        throw new Error('The response contains invalid data');
     }
 
     cache.put(key, data);
