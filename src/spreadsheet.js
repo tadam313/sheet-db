@@ -23,11 +23,7 @@ class Spreadsheet {
      * Queries the information about the sheet.
      */
     async info() {
-        let sheetInfo = await this.api.querySheetInfo(this.sheetId);
-        sheetInfo.workSheets = sheetInfo.workSheets
-            .map(sheet => new Worksheet(this.sheetId, sheet, this.api));
-
-        return sheetInfo;
+        return await this.api.querySheetInfo(this.sheetId);
     }
 
     /**
@@ -71,14 +67,24 @@ class Spreadsheet {
     }
 
     /**
+     * Retrieves worksheet instances.
+     *
+     * @returns {Worksheet[]}
+     */
+    async worksheets() {
+        let sheetInfo = await this.info();
+        return sheetInfo.workSheets.map(sheet => new Worksheet(this.sheetId, sheet, this.api));
+    }
+
+    /**
      * Retrieves the specific worksheet instance.
      *
      * @param {string} title Title of the worksheet
      * @returns {Worksheet}
      */
     async worksheet(title) {
-        let sheetInfo = await this.info();
-        let sheets = sheetInfo.workSheets.filter(item => item.worksheetInfo.title === title);
+        let workSheets = await this.worksheets();
+        let sheets = workSheets.filter(item => item.worksheetInfo.title === title);
         let worksheet;
 
         if (sheets.length) {

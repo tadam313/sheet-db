@@ -72,14 +72,6 @@ describe('Spreadsheet', function() {
             });
         });
 
-        it('should return worksheet instances', function*() {
-           // act
-            let info = yield sheet.info();
-
-            // assert
-            expect(info.workSheets).to.have.lengthOf(3);
-            expect(info.workSheets).all.to.be.an.instanceOf(Worksheet);
-        });
     });
 
     describe('#createWorksheet', function() {
@@ -122,6 +114,18 @@ describe('Spreadsheet', function() {
         });
     });
 
+
+    describe('#worksheets', function() {
+
+        it('should return worksheet instances', function*() {
+           // act
+            let workSheets = yield sheet.worksheets();
+
+            // assert
+            expect(workSheets).to.have.lengthOf(3);
+            expect(workSheets).all.to.be.an.instanceOf(Worksheet);
+        });
+    });
 
     describe('#worksheet', function() {
 
