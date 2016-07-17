@@ -13,10 +13,10 @@ class ApiError extends Error {
      * @constructor
      */
     constructor(statusCode, requestContext, innerError) {
-        super(`${innerError ? innerError.message : ''}`)
+        super(`${innerError ? innerError.message : ''}`);
         this.status = statusCode;
         this.context = requestContext;
-        this.message = this.statusDescription() + this.message;
+        this.message = ApiError.statusDescription(this.status) + this.message;
     }
 
     /**
@@ -24,8 +24,8 @@ class ApiError extends Error {
      *
      * @returns {string}
      */
-    statusDescription() {
-        switch (this.status) {
+    static statusDescription(status) {
+        switch (status) {
             case 405:
                 return 'Method not allowed';
 

@@ -1,7 +1,10 @@
 all: test style
 
+watch:
+	./node_modules/.bin/nodemon --watch src/ --exec "./node_modules/.bin/babel --presets es2015,stage-0 -d lib/ src/"
+
 test:
-	./node_modules/.bin/mocha test
+	./node_modules/.bin/mocha test/unit_test
 
 compile:
 	./node_modules/.bin/babel --presets es2015,stage-0 -d lib/ src/

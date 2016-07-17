@@ -25,7 +25,7 @@ var APISPEC = {
       "method": "DELETE"
     },
     "create_entry": {
-      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full",
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full?alt=json",
       "method": "POST",
       "headers": {
         "Content-Type": "application/atom+xml"

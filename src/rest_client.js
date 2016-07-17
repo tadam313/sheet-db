@@ -27,7 +27,7 @@ function executeRequest(opType, options) {
 
     return new Promise((resolve, reject) => {
         request(context, (err, response, body) => {
-            if (response.statusCode != 200) {
+            if (err || response.statusCode >= 400 || !body) {
                 reject(new ApiError(response.statusCode, context, err));
             } else {
                 resolve(body);

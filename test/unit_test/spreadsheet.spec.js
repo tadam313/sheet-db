@@ -2,15 +2,15 @@
 
 require("babel-polyfill");
 
-var Spreadsheet = require('../lib/spreadsheet');
-var Worksheet = require('../lib/worksheet');
-var clientFactory = require('../lib/rest_client');
+var Spreadsheet = require('../../lib/spreadsheet');
+var Worksheet = require('../../lib/worksheet');
+var clientFactory = require('../../lib/rest_client');
 var testUtil = require('./test_util');
 var chai = require('chai');
 var sinon = require('sinon');
 require('sinon-as-promised');
 
-var sampleQueryResponse = require('./fixtures/v3/sample_sheet_info');
+var sampleQueryResponse = require('./../fixtures/v3/sample_sheet_info');
 
 chai.use(require('sinon-chai'));
 chai.use(require('chai-things'));

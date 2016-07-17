@@ -2,7 +2,7 @@
 
 require("babel-polyfill");
 
-var util = require('../lib/util');
+var util = require('../../lib/util');
 var testUtil = require('./test_util');
 var expect   = require('chai').expect;
 

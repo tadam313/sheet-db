@@ -2,11 +2,11 @@
 
 require("babel-polyfill");
 
-var sampleQueryResponse = require('./fixtures/v3/sample_query');
-var sampleSheetInfo = require('./fixtures/v3/sample_sheet_info');
-var sampleFieldNames = require('./fixtures/v3/sample_query_fieldnames');
+var sampleQueryResponse = require('./../fixtures/v3/sample_query');
+var sampleSheetInfo = require('./../fixtures/v3/sample_sheet_info');
+var sampleFieldNames = require('./../fixtures/v3/sample_query_fieldnames');
 
-var api  = require('../lib/api/v3');
+var api  = require('../../lib/api/v3/index');
 var testUtil = require('./test_util');
 var util = require('util');
 var expect = require('chai').expect;

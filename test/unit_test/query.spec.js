@@ -2,7 +2,7 @@
 
 require("babel-polyfill");
 
-var query = require('../lib/query');
+var query = require('../../lib/query');
 var testUtil = require('./test_util');
 
 describe('QueryHelper', function() {
