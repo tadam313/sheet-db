@@ -60,7 +60,7 @@ class Worksheet {
             await this._listColumns()
         );
 
-        return await this.api.insertEntries(this.worksheetInfo, entries);
+        await this.api.insertEntries(this.worksheetInfo, entries);
     }
 
 
@@ -78,11 +78,11 @@ class Worksheet {
 
         if (result.length) {
             let entries = queryHelper.updateObject(result, update);
-            return await this.api.updateEntries(this.worksheetInfo, entries);
+            await this.api.updateEntries(this.worksheetInfo, entries);
         }
 
         if (options.upsert) {
-            return await this.api.insertEntries(this.worksheetInfo, update);
+            await this.api.insertEntries(this.worksheetInfo, update);
         }
     }
 
@@ -103,10 +103,7 @@ class Worksheet {
         let findOptions = {limit: options.justOne ? 1 : Number.MAX_VALUE};
         let result = await this.find(selector, findOptions);
 
-        return await this.api.deleteEntries(
-            this.worksheetInfo,
-            result.map(item => item['_id'])
-        );
+        await this.api.deleteEntries(this.worksheetInfo, result.map(item => item['_id']));
     }
 
     /**
@@ -123,16 +120,8 @@ class Worksheet {
      * @param {array} actualColumns Actual columns in the worksheet
      */
     async _createColumns(newColumns, actualColumns) {
-        newColumns = util.arrayDiff(
-            newColumns,
-            actualColumns.map(item => item['cell'])
-        );
-
-        return await this.api.createColumns(
-            this.worksheetInfo,
-            newColumns,
-            actualColumns.length
-        );
+        newColumns = util.arrayDiff(newColumns, actualColumns.map(item => item['cell']));
+        return await this.api.createColumns(this.worksheetInfo, newColumns, actualColumns.length);
     }
 }
 

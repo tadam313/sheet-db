@@ -60,10 +60,7 @@ class Spreadsheet {
             return;
         }
 
-        return await this.api.dropWorksheet(
-            this.sheetId,
-            worksheet.worksheetInfo.worksheetId
-        );
+        await this.api.dropWorksheet(this.sheetId, worksheet.worksheetInfo.worksheetId);
     }
 
     /**

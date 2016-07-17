@@ -14,14 +14,14 @@ var APISPEC = {
       "json": true
     },
     "create_worksheet": {
-      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full",
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full?alt=json",
       "method": "POST",
       "headers": {
         "Content-Type": "application/atom+xml"
       }
     },
     "drop_worksheet": {
-      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}",
+      "url": "{apiRoot}/worksheets/{sheetId}/{visibility}/full/{worksheetId}?alt=json",
       "method": "DELETE"
     },
     "create_entry": {

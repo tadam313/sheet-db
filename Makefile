@@ -3,7 +3,7 @@ all: test style
 watch:
 	./node_modules/.bin/nodemon --watch src/ --exec "./node_modules/.bin/babel --presets es2015,stage-0 -d lib/ src/"
 
-test:
+test: compile
 	./node_modules/.bin/mocha test/unit_test
 
 compile:
@@ -12,4 +12,4 @@ compile:
 style:
 	./node_modules/.bin/jscs ./src/**/*.js
 
-.PHONY: test style compile
+.PHONY: test style

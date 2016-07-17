@@ -27,7 +27,7 @@ function executeRequest(opType, options) {
 
     return new Promise((resolve, reject) => {
         request(context, (err, response, body) => {
-            if (err || response.statusCode >= 400 || !body) {
+            if (err || response.statusCode >= 400 || (context.method == 'GET' && !body)) {
                 reject(new ApiError(response.statusCode, context, err));
             } else {
                 resolve(body);
@@ -232,9 +232,8 @@ async function queryFields(workSheetInfo) {
     return await fetchData(
         key,
         api.converter.queryFieldNames,
-        () => {
-            return executeRequest('query_fields', workSheetInfo);
-        });
+        () => executeRequest('query_fields', workSheetInfo)
+    );
 }
 
 /**
