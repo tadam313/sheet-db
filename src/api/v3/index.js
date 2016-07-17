@@ -37,7 +37,7 @@ var APISPEC = {
       "json": true
     },
     "update_entry": {
-      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}",
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}?alt=json",
       "method": "PUT",
       "headers": {
         "Content-Type": "application/atom+xml",
@@ -45,7 +45,7 @@ var APISPEC = {
       }
     },
     "delete_entry": {
-      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}",
+      "url": "{apiRoot}/list/{sheetId}/{worksheetId}/{visibility}/full/{entityId}?alt=json",
       "method": "DELETE",
       "headers": {
         "If-Match": "*"
@@ -57,7 +57,7 @@ var APISPEC = {
       "json": true
     },
     "create_field": {
-      "url": "{apiRoot}/cells/{sheetId}/{worksheetId}/{visibility}/full/{cellId}",
+      "url": "{apiRoot}/cells/{sheetId}/{worksheetId}/{visibility}/full/{cellId}?alt=json",
       "method": "PUT",
       "headers": {
         "Content-Type": "application/atom+xml",
