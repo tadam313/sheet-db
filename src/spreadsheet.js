@@ -36,7 +36,7 @@ class Spreadsheet {
         let worksheet = await this.worksheet(title);
 
         if (!worksheet) {
-            let worksheetInfo = await this.api.createWorksheet(this.sheetId, options);
+            let worksheetInfo = await this.api.createWorksheet(this.sheetId, title, options);
             worksheet = new Worksheet(this.sheetId, worksheetInfo, this.api);
         }
 
@@ -54,7 +54,7 @@ class Spreadsheet {
             throw new Error('This operation requires authentication');
         }
 
-        let worksheet = await this.worksheet(title, false);
+        let worksheet = await this.worksheet(title);
 
         if (!worksheet) {
             return;
@@ -89,19 +89,6 @@ class Spreadsheet {
         }
 
         return worksheet;
-    }
-
-    /**
-     * Change the access token for the sheet
-     *
-     * @param {string} token Valid access token
-     */
-    changeAccessToken(token) {
-        if (!token) {
-            throw new Error('Token should be a valid string!');
-        }
-
-        this.api.setAccessToken(token);
     }
 }
 

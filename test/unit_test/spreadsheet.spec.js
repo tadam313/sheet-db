@@ -5,7 +5,6 @@ require("babel-polyfill");
 var Spreadsheet = require('../../lib/spreadsheet');
 var Worksheet = require('../../lib/worksheet');
 var clientFactory = require('../../lib/rest_client');
-var testUtil = require('./test_util');
 var chai = require('chai');
 var sinon = require('sinon');
 require('sinon-as-promised');
@@ -22,7 +21,7 @@ var expect = chai.expect;
 describe('Spreadsheet', function() {
 
     var sheet;
-    var sheetTitle = 'Sheet1';
+    var sheetId = 'Sheet1';
     var restClient;
     var querySheetInfoStub;
     var createWorksheetStub;
@@ -30,11 +29,11 @@ describe('Spreadsheet', function() {
 
     beforeEach(function() {
         restClient = clientFactory('test');
-        sheet = new Spreadsheet(sheetTitle, restClient, {token: 'test'});
+        sheet = new Spreadsheet(sheetId, restClient, {token: 'test'});
 
         querySheetInfoStub = sinon.stub(restClient, 'querySheetInfo');
         querySheetInfoStub.resolves(
-            restClient.getApi().converter.sheetInfoResponse(sampleQueryResponse)
+            restClient.getApi('v3').converter.sheetInfoResponse(sampleQueryResponse)
         );
 
         createWorksheetStub = sinon.stub(restClient, 'createWorksheet');
@@ -51,10 +50,10 @@ describe('Spreadsheet', function() {
 
         it('should call api', function*() {
             // act
-            let res = yield sheet.info();
+            yield sheet.info();
 
             // assert
-            expect(querySheetInfoStub).to.have.been.calledWith(sheetTitle);
+            expect(querySheetInfoStub).to.have.been.calledWith(sheetId);
         });
 
         it('should provide expected result', function*() {
@@ -78,16 +77,18 @@ describe('Spreadsheet', function() {
 
         it('should create worksheet if it does not exist', function*() {
             // act
-            let worksheet = yield sheet.createWorksheet('non-existent');
+            let worksheetTitle = 'test';
+            let worksheet = yield sheet.createWorksheet(worksheetTitle);
 
             // assert
-            expect(createWorksheetStub).to.have.been.calledWith(sheetTitle);
+            expect(createWorksheetStub).to.have.been.calledWith(sheetId, worksheetTitle);
+
             expect(worksheet).to.be.instanceof(Worksheet);
         });
 
         it('should not create a worksheet if "create_if_not_exists" flag is disabled', function*() {
             // act
-            let worksheet = yield sheet.createWorksheet('Sheet1');
+            yield sheet.createWorksheet('Sheet1');
 
             // assert
             expect(createWorksheetStub).to.have.not.been.called;
@@ -102,7 +103,7 @@ describe('Spreadsheet', function() {
             yield sheet.dropWorksheet('Sheet1');
 
             // assert
-            expect(dropWorksheetStub).to.have.been.calledWith(sheetTitle, 'worksheetId_1');
+            expect(dropWorksheetStub).to.have.been.calledWith(sheetId, 'worksheetId_1');
         });
 
         it('should not delete worksheet if it does not exist', function*() {

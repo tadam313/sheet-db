@@ -89,9 +89,12 @@ async function querySheetInfo(sheetId) {
  * Creates the specific worksheet
  *
  * @param {string} sheetId ID of the sheet
+ * @param {string} worksheetTitle name of the worksheet to be created
  * @param {object} options
  */
-async function createWorksheet(sheetId, options) {
+async function createWorksheet(sheetId, worksheetTitle, options) {
+    options = Object.assign({ title: worksheetTitle }, options);
+
     let payload = api.converter.createWorksheetRequest(options);
     let response = await executeRequest('create_worksheet', {
         body: payload,

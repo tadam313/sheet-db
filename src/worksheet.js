@@ -17,7 +17,7 @@ class Worksheet {
     constructor(sheetId, worksheetInfo, api) {
         this.worksheetInfo = worksheetInfo || {};
         this.api = api;
-        this.worksheetInfo.sheetId = sheetId;
+        Object.assign(this.worksheetInfo, {sheetId: sheetId});
     }
 
     /**
