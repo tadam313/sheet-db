@@ -23,6 +23,10 @@ function isNaN(value) {
  * @returns {*}
  */
 function coerceNumber(value) {
+    if (typeof value === 'number') {
+        return value;
+    }
+
     let isfloat = /^\d*(\.|,)\d*$/;
 
     if (isfloat.test(value)) {
@@ -41,6 +45,10 @@ function coerceNumber(value) {
  * @returns {*}
  */
 function coerceDate(value) {
+    if (value instanceof Date) {
+        return value;
+    }
+
     let timestamp = Date.parse(value);
 
     if (!isNaN(timestamp)) {
@@ -109,11 +117,11 @@ function createIdentifier() {
 
 
 module.exports = util._extend(util, {
-    isNaN: isNaN,
-    coerceNumber: coerceNumber,
-    coerceDate: coerceDate,
-    coerceValue: coerceValue,
-    getArrayFields: getArrayFields,
-    arrayDiff: arrayDiff,
-    createIdentifier: createIdentifier
+    isNaN,
+    coerceNumber,
+    coerceDate,
+    coerceValue,
+    getArrayFields,
+    arrayDiff,
+    createIdentifier
 });

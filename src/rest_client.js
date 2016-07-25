@@ -102,7 +102,9 @@ async function createWorksheet(sheetId, worksheetTitle, options) {
     });
 
     cache.clear();
-    return response;
+
+    // converts worksheetData to model
+    return api.converter.workSheetInfoResponse(response);
 }
 
 /**
@@ -290,17 +292,16 @@ module.exports = function(token, version) {
     }
 
     return {
-        setAccessToken: setAccessToken,
-        querySheetInfo: querySheetInfo,
-        createWorksheet: createWorksheet,
-        dropWorksheet: dropWorksheet,
-        insertEntries: insertEntries,
-        queryWorksheet: queryWorksheet,
-        deleteEntries: deleteEntries,
-        queryFields: queryFields,
-        createColumns: createColumns,
-        updateEntries: updateEntries,
-        getApi: getApi,
-        isAuthenticated: isAuthenticated
+        querySheetInfo,
+        createWorksheet,
+        dropWorksheet,
+        insertEntries,
+        queryWorksheet,
+        deleteEntries,
+        queryFields,
+        createColumns,
+        updateEntries,
+        getApi,
+        isAuthenticated
     };
 };

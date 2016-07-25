@@ -144,6 +144,21 @@ function sheetInfoResponse(rawData) {
 }
 
 /**
+ * Converts create worksheet result to domain specific data.
+ *
+ * @param rawData
+ * @returns {*}
+ */
+function workSheetInfoResponse(rawData) {
+
+    if (typeof rawData === 'string') {
+        rawData = JSON.parse(rawData);
+    }
+
+    return worksheetData(rawData.entry);
+}
+
+/**
  * Converts the query results to domain specific data.
  *
  * @param rawData
@@ -268,13 +283,14 @@ function createFieldRequest(columnName, position) {
 }
 
 module.exports = {
-    queryFieldNames: queryFieldNames,
-    queryRequest: queryRequest,
-    queryResponse: queryResponse,
-    sheetInfoResponse: sheetInfoResponse,
+    queryFieldNames,
+    queryRequest,
+    queryResponse,
+    sheetInfoResponse,
+    workSheetInfoResponse,
 
-    createFieldRequest: createFieldRequest,
-    createEntryRequest: createEntryRequest,
-    createWorksheetRequest: createWorksheetRequest,
-    updateEntryRequest: updateEntryRequest
+    createFieldRequest,
+    createEntryRequest,
+    createWorksheetRequest,
+    updateEntryRequest
 };
