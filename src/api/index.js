@@ -9,9 +9,7 @@ var apis = [{
  * @returns {Array}
  */
 function getSupportedVersions() {
-    return apis.map(function(item) {
-        return item.id;
-    });
+    return apis.map(api => api.id);
 }
 
 /**
@@ -20,9 +18,7 @@ function getSupportedVersions() {
  * @returns {{id: string, api: exports}}
  */
 function getApi(version='v3') {
-    var candidates = apis.filter(function(item) {
-        return item.id === version;
-    });
+    var candidates = apis.filter((item) => item.id === version);
 
     if (!candidates.length) {
         throw new Error('This API version is not supported! Supported versions are: ' +

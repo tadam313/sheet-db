@@ -4,7 +4,7 @@ Makefile
 .travis.yml
 .jscsrc
 
-dev/
+src/
 
 npm-debug.log
 

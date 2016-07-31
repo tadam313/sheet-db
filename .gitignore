@@ -7,3 +7,4 @@ test_local.js
 
 # Build artifacts
 lib
+coverage

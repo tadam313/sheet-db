@@ -1,7 +1,15 @@
 language: node_js
+script:
+  - make
+after_script:
+  - make send-coverage
 node_js:
-  - "5.1"
-  - "4.2"
-  - "4.1"
-  - "4.0"
-  - "iojs"
+  - '5.1'
+  - '4.2'
+  - '4.1'
+  - '4.0'
+  - iojs
+addons:
+  code_climate:
+    repo_token:
+      secure: lh3jBAW0YkoMDs8rH4y3UDlSDhhnBeUZodjTlrjsQrqJlX81bR0UwOObn2jlNDmow3V/CDXCwruqdO4d8xI4r1/VW5exZ98DoybhT6vQ8SlQ0ajbTWZM5w4k+5pKDPoh/uTZud+uEXRkcNrCbx/FDywXwl7uF2oa/zsT8M1Gm5lNp1BsdlzEqy9+Tep+p3d8jSRZWnn7XZBacWBKLBaJP+BX1g+bWw1zRASAh3Ca+1lB8qauunE5T4melhMOOMP0r1w8cHyo1DYWzcQp20tzBOBzDZ/2wBIqW4EoVrmEpoJpBZtgDmMZUtZuyQ0vT8Zbd+1UERQ532uoLfBY1D2MlLG5mLQ76vWpkbSRqbKaREEux+3X9A6qiYQ/lIEXXYDa+1OwW/WI/zcJaO7w9iS1UiwtoNbIHid0++YKSae4WVBr3pS7HIYvIlIlwz5mg1E5Zue0G5ZloEOtwKQSIbkXX8/CyjzJepcLiFdRmjLmVl3hxxsWusOEmnHCINObIlJo89MDS4mIa6VmIqvJZzed0Os/4oazbtecHVaWVY4yhNIhT47jw+T9MeJxmwH7op03afb+qocEAmA/K6fMtJvuVhSzdoYW6T43aKCRhgAzj5xk1rKGP+oQ3Z85io7ZExG/WYtr3JT1maL6fPHcpaaOsojE/o6GxNWDd2MkhNy+iQQ=
