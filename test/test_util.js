@@ -89,7 +89,8 @@ function assertFuncReportsError(stubDependency, functionInvoker) {
  * @param msec how long should it pause?
  * @returns {Promise}
  */
-function sleep(msec=1000) {
+function sleep(msec) {
+    msec = msec || 1000;
     return new Promise((resolve) => setTimeout(() => resolve(), msec));
 }
 

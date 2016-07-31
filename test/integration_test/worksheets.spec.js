@@ -54,7 +54,7 @@ describe('Worksheets', function() {
 
     describe('#find', function() {
         beforeEach(function*() {
-            yield worksheet.insert(testData);
+            yield worksheet.insert(testData, {ordered: true});
         });
 
         it('should be able to list the whole sheet', function*() {
