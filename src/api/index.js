@@ -19,7 +19,7 @@ function getSupportedVersions() {
  * @param version
  * @returns {{id: string, api: exports}}
  */
-function getApi(version) {
+function getApi(version='v3') {
     var candidates = apis.filter(function(item) {
         return item.id === version;
     });
@@ -33,6 +33,6 @@ function getApi(version) {
 }
 
 module.exports = {
-    getSupportedVersions: getSupportedVersions,
-    getApi: getApi
+    getSupportedVersions,
+    getApi
 };

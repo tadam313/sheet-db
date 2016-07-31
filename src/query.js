@@ -195,20 +195,22 @@ function stringify(query, actualField) {
 /**
  * Updates the object based on the MongoDB specification. It wont mutate the original object
  *
- * @param {object} originalObject Original object
+ * @param {object} entities Original object
  * @param {object} descriptor Update description
  * @returns {*}
  */
-function updateObject(originalObject, descriptor) {
+function updateObject(entities, descriptor) {
 
-    if (!originalObject) {
-        return originalObject;
+    if (!entities) {
+        return entities;
     }
 
-    let object = util._extend(originalObject instanceof Array ? [] : {}, originalObject);
+    let result = Array.isArray(entities) ? entities : [entities];
 
     if (!isUpdateDescriptor(descriptor)) {
-        return descriptor && typeof descriptor === 'object' ? descriptor : object;
+        return descriptor && typeof descriptor === 'object'
+            ? [util.copyMetaProperties(descriptor, result[0])]
+            : result;
     }
 
     // get updater operations
@@ -217,37 +219,31 @@ function updateObject(originalObject, descriptor) {
         .filter(op => op.transformation);
 
     for (let operator of operations) {
-        object = mutate(object, descriptor[operator.name], operator.transformation);
+        result = mutate(result, descriptor[operator.name], operator.transformation);
     }
 
-
-    return object;
+    return result;
 }
 
 /**
  * Mutates the object according to the transform logic.
  *
- * @param {object} object Original entity object
+ * @param {object} entities Original entity object
  * @param {object} operationDescription Update descriptor
  * @param {function} transformation Transformator function
  * @returns {object}
  */
-function mutate(object, operationDescription, transformation) {
+function mutate(entities, operationDescription, transformation) {
     if (!operationDescription) {
         return object;
     }
 
-    let isArray = Array.isArray(object);
-    let result = isArray ? object : [object];
-
-    result = result.map(item => {
+    return entities.map(item => {
         Object.keys(operationDescription)
             .forEach(key => transformation(item, key, operationDescription[key]));
 
         return item;
     });
-
-    return isArray ? result : result[0];
 }
 
 /**
@@ -261,10 +257,7 @@ function isUpdateDescriptor(descriptor) {
         return false;
     }
 
-    let keys = Object.keys(descriptor);
-    let supportedOperators = Object.keys(UPDATE_OPS);
-
-    return !util.arrayDiff(keys, supportedOperators).length;
+    return Object.keys(descriptor).some(op => op in UPDATE_OPS);
 }
 
 /**
@@ -278,8 +271,8 @@ function isSingleObjectSelector(selector) {
 }
 
 module.exports = {
-    stringify: stringify,
-    updateObject: updateObject,
-    isUpdateDescriptor: isUpdateDescriptor,
-    isSingleObjectSelector: isSingleObjectSelector
+    stringify,
+    updateObject,
+    isSingleObjectSelector,
+    isUpdateDescriptor
 };

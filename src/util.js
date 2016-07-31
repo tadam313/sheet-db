@@ -115,6 +115,25 @@ function createIdentifier() {
     return Array.prototype.slice.call(arguments).join('_');
 }
 
+/**
+ * Grab meta google drive meta properties from source and add those to dest.
+ *
+ * @param dest
+ * @param source
+ */
+function copyMetaProperties(dest, source) {
+    if (!dest || !source) {
+        return dest;
+    }
+
+    let fields = ['_id', '_updated'];
+
+    for (let field of fields) {
+        dest[field] = source[field];
+    }
+
+    return dest;
+}
 
 module.exports = util._extend(util, {
     isNaN,
@@ -123,5 +142,6 @@ module.exports = util._extend(util, {
     coerceValue,
     getArrayFields,
     arrayDiff,
-    createIdentifier
+    createIdentifier,
+    copyMetaProperties
 });

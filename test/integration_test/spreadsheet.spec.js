@@ -2,6 +2,7 @@
 
 var factory = require('./sheet_db_factory');
 var Worksheet = require('../../lib/worksheet');
+let testUtil = require('../test_util');
 var chai = require('chai');
 var expect = chai.expect;
 
@@ -13,6 +14,10 @@ describe('Spreadsheet API', function() {
 
     before(function*() {
         sheetDb = yield factory();
+    });
+
+    beforeEach(function*() {
+        yield testUtil.sleep();
     });
 
     afterEach(function*() {

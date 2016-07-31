@@ -48,8 +48,14 @@ class Worksheet {
      * Insert an entry/entries to the worksheet.
      *
      * @param {array|object} entries Single or multiple objects to insert into the sheet
+     * @param {object} options Optional update options
      */
-    async insert(entries) {
+    async insert(entries, options) {
+        options = options || {};
+
+        if (!entries) {
+            return;
+        }
 
         if (!(entries instanceof Array)) {
             entries = [entries];
@@ -60,7 +66,7 @@ class Worksheet {
             await this._listColumns()
         );
 
-        await this.api.insertEntries(this.worksheetInfo, entries);
+        await this.api.insertEntries(this.worksheetInfo, entries, options);
     }
 
 

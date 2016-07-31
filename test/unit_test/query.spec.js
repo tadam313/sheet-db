@@ -3,7 +3,7 @@
 require("babel-polyfill");
 
 var query = require('../../lib/query');
-var testUtil = require('./test_util');
+var testUtil = require('./../test_util');
 
 describe('QueryHelper', function() {
 
@@ -132,14 +132,14 @@ describe('QueryHelper', function() {
                 {field1: 5, field2: 'foo'},
                 {$set: {field1: 42, field2: 'bar'}}
             ],
-            expected: {field1: 42, field2: 'bar'}
+            expected: [{field1: 42, field2: 'bar'}]
         }, {
             name: 'should handle composite assignment',
             data: [
                 {field1: 5, field2: 6},
                 {$set: {field1: null}, $currentDate: {field2: true, field1: false}}
             ],
-            expected: {field1: null, field2: new Date(0)}
+            expected: [{field1: null, field2: new Date(0)}]
         }, {
             name: 'should handle assignment of array',
             data: [
@@ -153,42 +153,42 @@ describe('QueryHelper', function() {
                 {field1: 6},
                 {$inc: {field1: 10}}
             ],
-            expected: {field1: 16}
+            expected: [{field1: 16}]
         }, {
             name: 'should handle mul operator',
             data: [
                 {field1: 6},
                 {$mul: {field1: 2}}
             ],
-            expected: {field1: 12}
+            expected: [{field1: 12}]
         }, {
             name: 'should handle min operator',
             data: [
                 {field1: 6},
                 {$min: {field1: 2}}
             ],
-            expected: {field1: 2}
+            expected: [{field1: 2}]
         }, {
-            name: 'should skip min operator',
+            name: 'should ignore min operator if not needed',
             data: [
                 {field1: 6},
                 {$min: {field1: 7}}
             ],
-            expected: {field1: 6}
+            expected: [{field1: 6}]
         }, {
             name: 'should handle max operator',
             data: [
                 {field1: 6},
                 {$max: {field1: 10}}
             ],
-            expected: {field1: 10}
+            expected: [{field1: 10}]
         }, {
-            name: 'should skip max operator',
+            name: 'should ignore max operator if not needed',
             data: [
                 {field1: 6},
                 {$max: {field1: 2}}
             ],
-            expected: {field1: 6}
+            expected: [{field1: 6}]
         }, {
             name: 'should handle collection update',
             data: [
@@ -202,21 +202,28 @@ describe('QueryHelper', function() {
                 {field1: 5},
                 {$set: {field2: 10}}
             ],
-            expected: {field1: 5}
+            expected: [{field1: 5}]
         }, {
             name: 'should handle replace object',
             data: [
-                {field1: 5},
+                {_id: 'test', _updated: 'test', field1: 5},
                 {field2: 42}
             ],
-            expected: {field2: 42}
+            expected: [{_id: 'test', _updated: 'test', field2: 42}]
         }, {
             name: 'should handle skip invalid descriptor',
             data: [
                 {field1: 42},
                 null
             ],
-            expected: {field1: 42}
+            expected: [{field1: 42}]
+        }, {
+            name: 'should skip unknown operators',
+            data: [
+                [{field1: 42}, {field1: 56}],
+                {test: 'test', $set: {field1: 1}}
+            ],
+            expected: [{field1: 1}, {field1: 1}]
         }];
 
         testUtil.runTests(testCases, query.updateObject);

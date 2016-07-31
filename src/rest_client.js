@@ -128,20 +128,28 @@ async function dropWorksheet(sheetId, worksheetId) {
  *
  * @param {string} worksheetInfo
  * @param {array} entries
+ * @param {object} options
  */
-async function insertEntries(worksheetInfo, entries) {
-    let requests = entries.map(entry => {
+async function insertEntries(worksheetInfo, entries, options) {
+    let response;
+    let insertEntry = (entry) => {
         var payload = util._extend(
             {body: api.converter.createEntryRequest(entry)},
             worksheetInfo
         );
 
         return executeRequest('create_entry', payload);
-    });
+    };
 
-    let response = await Promise.all(requests);
+    if (options.ordered) {
+        for (let entry of entries) {
+            response = await insertEntry(entry);
+        }
+    } else {
+        response = await Promise.all(entries.map(entry => insertEntry(entry)));
+    }
+
     cache.clear();
-
     return response;
 }
 
@@ -152,7 +160,6 @@ async function insertEntries(worksheetInfo, entries) {
  * @param {array} entries
  */
 async function updateEntries(worksheetInfo, entries) {
-
     let requests = entries.map(entry => {
         var payload = util._extend({
                 body: api.converter.updateEntryRequest(entry),

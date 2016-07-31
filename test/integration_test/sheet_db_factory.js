@@ -6,13 +6,13 @@ var assert  = require('assert');
 var connect = require('../../');
 
 function formatKey(key) {
-    return key.replace(/\\n/g, '\n').replace(/\\u([\d\w]{4})/gi, function(match, grp) {
-        return String.fromCharCode(parseInt(grp, 16));
-    });
+    return key.replace(/\\n/g, '\n').replace(/\\u([\d\w]{4})/gi,
+        (match, grp) => String.fromCharCode(parseInt(grp, 16))
+    );
 }
 
 function requestAccessToken(user, key) {
-        key = formatKey(key);
+    key = formatKey(key);
 
     var authOptions = {
         iss: user + '@developer.gserviceaccount.com',
@@ -43,7 +43,7 @@ function requestAccessToken(user, key) {
     });
 }
 
-module.exports = function*() {
+module.exports = function* () {
     assert(process.env.USER, 'Please specify the acting user for the tests');
     assert(process.env.KEY, 'Please specify your private key for the tests');
     assert(process.env.SHEET, 'Please specify a sandbox sheet for the tests');

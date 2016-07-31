@@ -84,9 +84,19 @@ function assertFuncReportsError(stubDependency, functionInvoker) {
     expect(spy).to.have.been.calledWithExactly(err);
 }
 
+/**
+ * Pause execution for a while
+ * @param msec how long should it pause?
+ * @returns {Promise}
+ */
+function sleep(msec=1000) {
+    return new Promise((resolve) => setTimeout(() => resolve(), msec));
+}
+
 module.exports = {
-    runTests: runTests,
-    assertXMLPayload: assertXMLPayload,
-    identFunc: identFunc,
-    assertFuncReportsError: assertFuncReportsError
+    runTests,
+    assertXMLPayload,
+    identFunc,
+    assertFuncReportsError,
+    sleep
 };
