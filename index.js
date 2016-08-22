@@ -3,6 +3,8 @@ require("babel-polyfill");
 
 var Spreadsheet = require('./lib/spreadsheet');
 var clientFactory = require('./lib/rest_client');
+var apiFactory = require('./lib/api');
+var cache = require('memory-cache');
 
 /**
  * Connects and initializes the sheet db.
@@ -13,10 +15,15 @@ var clientFactory = require('./lib/rest_client');
 function connect(sheetId, options) {
 
     options = options || {};
-    options.version = 'v3';
 
     // TODO: needs better access token handling
-    var restClient = clientFactory(options.token, options.version);
+    let api = apiFactory.getApi(options.version);
+    let restClient = clientFactory({
+        token: options.token,
+        gApi: api,
+        gCache: cache
+    });
+
     return new Spreadsheet(sheetId, restClient, options);
 }
 

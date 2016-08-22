@@ -1,11 +1,10 @@
 'use strict';
 
 var ApiError    = require('./api_error');
-var apiFactory  = require('./api');
 var util        = require('./util');
 var request     = require('request');
-var cache       = require('memory-cache');
 
+var cache = null
 var token = null;
 var api   = null;
 
@@ -133,8 +132,9 @@ async function dropWorksheet(sheetId, worksheetId) {
 async function insertEntries(worksheetInfo, entries, options) {
     let response;
     let insertEntry = (entry) => {
-        var payload = util._extend(
-            {body: api.converter.createEntryRequest(entry)},
+        var payload = Object.assign({
+                body: api.converter.createEntryRequest(entry)
+            },
             worksheetInfo
         );
 
@@ -161,7 +161,7 @@ async function insertEntries(worksheetInfo, entries, options) {
  */
 async function updateEntries(worksheetInfo, entries) {
     let requests = entries.map(entry => {
-        var payload = util._extend({
+        var payload = Object.assign({
                 body: api.converter.updateEntryRequest(entry),
                 entityId: entry._id
             },
@@ -290,9 +290,10 @@ function isAuthenticated() {
     return !!token;
 }
 
-module.exports = function(token, version) {
+module.exports = function({token, gApi, gCache}) {
 
-    api = apiFactory.getApi(version || 'v3');
+    api = gApi;
+    cache = gCache;
 
     if (token) {
         setAccessToken(token);

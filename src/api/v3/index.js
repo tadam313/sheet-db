@@ -120,5 +120,6 @@ function getOperationContext(opType, options) {
 
 module.exports = {
     getOperationContext: getOperationContext,
-    converter: converter
+    converter: converter,
+    spec: APISPEC
 };

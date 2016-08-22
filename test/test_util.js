@@ -91,7 +91,10 @@ function assertFuncReportsError(stubDependency, functionInvoker) {
  */
 function sleep(msec) {
     msec = msec || 1000;
-    return new Promise((resolve) => setTimeout(() => resolve(), msec));
+
+    return new Promise(function(resolve) {
+        setTimeout(resolve, msec);
+    });
 }
 
 module.exports = {

@@ -4,12 +4,12 @@ require("babel-polyfill");
 
 var Spreadsheet = require('../../lib/spreadsheet');
 var Worksheet = require('../../lib/worksheet');
-var clientFactory = require('../../lib/rest_client');
+var api = require('../../lib/api').getApi('v3');
 var chai = require('chai');
 var sinon = require('sinon');
 require('sinon-as-promised');
 
-var sampleQueryResponse = require('./../fixtures/v3/sample_sheet_info');
+var sampleQueryResponse = api.converter.sheetInfoResponse(require('./../fixtures/v3/sample_sheet_info'));
 
 chai.use(require('sinon-chai'));
 chai.use(require('chai-things'));
@@ -28,22 +28,16 @@ describe('Spreadsheet', function() {
     var dropWorksheetStub;
 
     beforeEach(function() {
-        restClient = clientFactory('test');
+        restClient = {
+            createWorksheet: sinon.spy(),
+            dropWorksheet: sinon.spy(),
+            querySheetInfo: sinon.stub(),
+            isAuthenticated: function() { return true; }
+        };
+
         sheet = new Spreadsheet(sheetId, restClient, {token: 'test'});
 
-        querySheetInfoStub = sinon.stub(restClient, 'querySheetInfo');
-        querySheetInfoStub.resolves(
-            restClient.getApi('v3').converter.sheetInfoResponse(sampleQueryResponse)
-        );
-
-        createWorksheetStub = sinon.stub(restClient, 'createWorksheet');
-        dropWorksheetStub = sinon.stub(restClient, 'dropWorksheet');
-    });
-
-    afterEach(function() {
-        querySheetInfoStub.restore();
-        createWorksheetStub.restore();
-        dropWorksheetStub.restore();
+        restClient.querySheetInfo.resolves(sampleQueryResponse);
     });
 
     describe('#sheetInfo', function() {
@@ -53,7 +47,7 @@ describe('Spreadsheet', function() {
             yield sheet.info();
 
             // assert
-            expect(querySheetInfoStub).to.have.been.calledWith(sheetId);
+            expect(restClient.querySheetInfo).to.have.been.calledWith(sheetId);
         });
 
         it('should provide expected result', function*() {
@@ -81,7 +75,7 @@ describe('Spreadsheet', function() {
             let worksheet = yield sheet.createWorksheet(worksheetTitle);
 
             // assert
-            expect(createWorksheetStub).to.have.been.calledWith(sheetId, worksheetTitle);
+            expect(restClient.createWorksheet).to.have.been.calledWith(sheetId, worksheetTitle);
 
             expect(worksheet).to.be.instanceof(Worksheet);
         });
@@ -91,7 +85,7 @@ describe('Spreadsheet', function() {
             yield sheet.createWorksheet('Sheet1');
 
             // assert
-            expect(createWorksheetStub).to.have.not.been.called;
+            expect(restClient.createWorksheet).to.have.not.been.called;
         });
 
     });
@@ -103,7 +97,7 @@ describe('Spreadsheet', function() {
             yield sheet.dropWorksheet('Sheet1');
 
             // assert
-            expect(dropWorksheetStub).to.have.been.calledWith(sheetId, 'worksheetId_1');
+            expect(restClient.dropWorksheet).to.have.been.calledWith(sheetId, 'worksheetId_1');
         });
 
         it('should not delete worksheet if it does not exist', function*() {
@@ -111,7 +105,7 @@ describe('Spreadsheet', function() {
             yield sheet.dropWorksheet('non-existent');
 
             // assert
-            expect(dropWorksheetStub).to.have.not.been.called;
+            expect(restClient.dropWorksheet).to.have.not.been.called;
         });
     });
 

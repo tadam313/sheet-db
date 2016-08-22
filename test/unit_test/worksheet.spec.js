@@ -3,14 +3,14 @@
 require("babel-polyfill");
 
 var Worksheet = require('../../lib/worksheet');
-var clientFactory = require('../../lib/rest_client');
 var query = require('../../lib/query');
 var chai = require('chai');
 var sinon = require('sinon');
+var api = require('../../lib/api').getApi('v3');
 require('sinon-as-promised');
 
-var sampleQueryResponse = require('./../fixtures/v3/sample_query');
-var sampleFieldQueryResponse = require('./../fixtures/v3/sample_query_fieldnames');
+var sampleQueryResponse = api.converter.queryResponse(require('./../fixtures/v3/sample_query'));
+var sampleFieldQueryResponse = api.converter.queryFieldNames(require('./../fixtures/v3/sample_query_fieldnames'));
 
 chai.use(require('sinon-chai'));
 chai.use(require('chai-things'));
@@ -19,37 +19,22 @@ var expect = chai.expect;
 
 describe('Worksheet', function() {
 
-    var worksheet;
-    var restClient = clientFactory();
-    var queryWorksheetStub;
-    var queryFieldsStub;
-    var insertEntriesStub;
-    var updateEntriesStub;
-    var deleteEntriesStub;
-    var createColumnsStub;
+    var worksheet, restClient;
 
     beforeEach(function() {
-        queryWorksheetStub = sinon.stub(restClient, 'queryWorksheet');
-        queryWorksheetStub.resolves(restClient.getApi().converter.queryResponse(sampleQueryResponse));
+        restClient = {
+            insertEntries: sinon.spy(),
+            updateEntries: sinon.spy(),
+            deleteEntries: sinon.spy(),
+            createColumns: sinon.spy(),
+            queryWorksheet: sinon.stub(),
+            queryFields: sinon.stub()
+        };
 
-        queryFieldsStub = sinon.stub(restClient, 'queryFields');
-        queryFieldsStub.resolves(restClient.getApi().converter.queryFieldNames(sampleFieldQueryResponse));
-
-        insertEntriesStub = sinon.stub(restClient, 'insertEntries');
-        updateEntriesStub = sinon.stub(restClient, 'updateEntries');
-        deleteEntriesStub = sinon.stub(restClient, 'deleteEntries');
-        createColumnsStub = sinon.stub(restClient, 'createColumns');
+        restClient.queryWorksheet.resolves(sampleQueryResponse);
+        restClient.queryFields.resolves(sampleFieldQueryResponse);
 
         worksheet = new Worksheet('test', {}, restClient);
-    });
-
-    afterEach(function() {
-        queryWorksheetStub.restore();
-        queryFieldsStub.restore();
-        insertEntriesStub.restore();
-        updateEntriesStub.restore();
-        deleteEntriesStub.restore();
-        createColumnsStub.restore();
     });
 
     describe('#find', function() {
@@ -62,7 +47,7 @@ describe('Worksheet', function() {
             let result = yield worksheet.find(selector);
 
             // assert
-            expect(queryWorksheetStub).to.have.been.calledOnce;
+            expect(restClient.queryWorksheet).to.have.been.calledOnce;
             expect(result).all.to.containSubset([
                 {_id: 'this_is_an_entryId_1'},
                 {_id: 'this_is_an_entryId_2'},
@@ -124,9 +109,9 @@ describe('Worksheet', function() {
             yield worksheet.insert(entry, testOptions);
 
             // assert
-            expect(queryFieldsStub).to.have.been.calledOnce;
-            expect(insertEntriesStub).to.have.been.calledOnce;
-            expect(insertEntriesStub).to.have.been.calledWith(
+            expect(restClient.queryFields).to.have.been.calledOnce;
+            expect(restClient.insertEntries).to.have.been.calledOnce;
+            expect(restClient.insertEntries).to.have.been.calledWith(
                 {sheetId: 'test'},
                 [{field1: 3, field2: 10}],
                 testOptions
@@ -141,12 +126,12 @@ describe('Worksheet', function() {
             yield worksheet.insert(entry);
 
             // assert
-            expect(insertEntriesStub).to.have.been.calledWith(
+            expect(restClient.insertEntries).to.have.been.calledWith(
                 {sheetId: 'test'},
                 [{field1: 3, field3: 10, field5: 20}]
             );
 
-            expect(createColumnsStub).to.have.been.calledWith(
+            expect(restClient.createColumns).to.have.been.calledWith(
                 {sheetId: 'test'}, ['field3', 'field5']
             );
         });
@@ -154,13 +139,13 @@ describe('Worksheet', function() {
         it('should handle if nothing is inserted', function*() {
             yield worksheet.insert(null);
 
-            expect(queryFieldsStub).to.not.have.been.called;
-            expect(insertEntriesStub).to.not.have.been.called;
+            expect(restClient.queryFields).to.not.have.been.called;
+            expect(restClient.insertEntries).to.not.have.been.called;
         });
     });
 
     describe('#update', function() {
-        let findStub;
+        var findStub;
 
         beforeEach(function() {
             findStub = sinon.stub(worksheet, 'find');
@@ -173,14 +158,14 @@ describe('Worksheet', function() {
 
         it('should call the api with an array of updatable entries', function*() {
             // arrange
-            let entry = {field1: 'test'};
+            var entry = {field1: 'test'};
             findStub.resolves([{field1: 1}, {field1: 1, test: 2}]);
 
             // act
             yield worksheet.update({field1: 1}, entry);
 
             // assert
-            expect(updateEntriesStub).to.have.been.calledWith(
+            expect(restClient.updateEntries).to.have.been.calledWith(
                 {sheetId: 'test'}, [entry]
             );
         });
@@ -193,7 +178,7 @@ describe('Worksheet', function() {
             yield worksheet.update(null, null);
 
             // assert
-            expect(updateEntriesStub).to.have.been.calledOnce;
+            expect(restClient.updateEntries).to.have.been.calledOnce;
             expect(findStub).to.have.been.calledWith(
                 null, sinon.match({limit: 1})
             );
@@ -207,7 +192,7 @@ describe('Worksheet', function() {
             yield worksheet.update(null, null, {multiple: true});
 
             // assert
-            expect(updateEntriesStub).to.have.been.calledOnce;
+            expect(restClient.updateEntries).to.have.been.calledOnce;
             expect(findStub).to.have.been.calledWith(
                 null, sinon.match({limit: Number.MAX_VALUE})
             );
@@ -215,28 +200,28 @@ describe('Worksheet', function() {
 
         it('should insert value if not exists and upsert option is set', function*() {
             // arrange
-            let entry = {field1: 1};
+            var entry = {field1: 1};
 
             // act
             yield worksheet.update(null, entry, {upsert: true});
 
             // assert
-            expect(updateEntriesStub).to.not.have.been.called;
-            expect(insertEntriesStub).to.have.been.calledWith(
+            expect(restClient.updateEntries).to.not.have.been.called;
+            expect(restClient.insertEntries).to.have.been.calledWith(
                 {sheetId: 'test'}, entry
             );
         });
 
         it('should NOT insert value if not exists and upsert option is NOT set', function*() {
             // arrange
-            let entry = {field1: 1};
+            var entry = {field1: 1};
 
             // act
             yield worksheet.update(null, entry);
 
             // assert
-            expect(updateEntriesStub).to.not.have.been.called;
-            expect(insertEntriesStub).to.not.have.been.called;
+            expect(restClient.updateEntries).to.not.have.been.called;
+            expect(restClient.updateEntries).to.not.have.been.called;
         });
     });
 
@@ -244,14 +229,14 @@ describe('Worksheet', function() {
 
         it('should call the api', function*() {
             // arrange
-            let selector = {field1: 1};
+            var selector = {field1: 1};
 
             // act
             yield worksheet.remove(selector);
 
             // assert
-            expect(deleteEntriesStub).to.have.been.calledOnce;
-            expect(deleteEntriesStub).to.have.been.calledWith(
+            expect(restClient.deleteEntries).to.have.been.calledOnce;
+            expect(restClient.deleteEntries).to.have.been.calledWith(
                 {sheetId: 'test'}, ['this_is_an_entryId_1']
             );
         });
@@ -264,9 +249,9 @@ describe('Worksheet', function() {
             yield worksheet.remove(selector);
 
             // assert
-            expect(deleteEntriesStub).to.have.been.calledOnce;
-            expect(queryWorksheetStub).to.not.have.been.called;
-            expect(deleteEntriesStub).to.have.been.calledWith(
+            expect(restClient.deleteEntries).to.have.been.calledOnce;
+            expect(restClient.queryFields).to.not.have.been.called;
+            expect(restClient.deleteEntries).to.have.been.calledWith(
                 {sheetId: 'test'}, 'test'
             );
         });
@@ -279,8 +264,8 @@ describe('Worksheet', function() {
             yield worksheet.remove(selector, {justOne: true});
 
             // assert
-            expect(deleteEntriesStub).to.have.been.calledOnce;
-            expect(deleteEntriesStub).to.have.been.calledWith(
+            expect(restClient.deleteEntries).to.have.been.calledOnce;
+            expect(restClient.deleteEntries).to.have.been.calledWith(
                 {sheetId: 'test'}, ['this_is_an_entryId_1']
             );
         });

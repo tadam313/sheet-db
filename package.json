@@ -46,6 +46,7 @@
     "jscs": "^3.0.7",
     "jsonwebtoken": "^7.1.7",
     "mocha": "*",
+    "nock": "^8.0.0",
     "nodemon": "^1.9.2",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^4.0.0",

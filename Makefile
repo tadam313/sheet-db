@@ -6,6 +6,9 @@ watch:
 test: compile
 	./node_modules/.bin/istanbul cover --report text --report lcov ./node_modules/.bin/_mocha "test/unit_test/**/*.spec.js"
 
+run-test:
+	./node_modules/.bin/_mocha "test/unit_test/**/*.spec.js"
+
 integration: compile
 	./node_modules/.bin/mocha test/integration_test
 
