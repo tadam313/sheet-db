@@ -21,16 +21,16 @@ Before you start, please make sure you are familiar with the terminology of Spre
 First include the package and connect to the specific spreadsheets.
 
 ```
-var Sheetdb = require('sheet-db');
+var connect = require('sheet-db');
 
 // connect to <sheetID>, all subsequent requests will be public (unauthorized)
-var sheet = Sheetdb.connect('<sheetId>');
+var sheet = connect('<sheetId>');
 
 // connect to <sheetId> and set access token and additional options... Now you will communicate in authorized manner.
 // Options
 //  - token: access token you have got from Google
-//  - version: this is the API version. This is future use, only v3 is supported currently
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>', version: 'v3'});
+//  - version: this is the API version. This is for future use, only v3 is supported currently
+var sheet = connect('<sheetId>', {token: '<token>', version: 'v3'});
 ```
 
 ### Working with sheets
@@ -39,15 +39,15 @@ Sheets are the highest level entities in Spreadsheets. You can query a specific 
 
 ```
 // query info about the specific sheet (authors, worksheets)
-var sheet = Sheetdb.connect('<sheetId>');
+var sheet = connect('<sheetId>');
 sheet.info().then(...);
 
 // create new sheet (requires authentication)
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+var sheet = connect('<sheetId>', {token: '<token>'});
 sheet.createWorksheet('<sheetTitle>').then(...);
 
 // drop a sheet (requires authentication)
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+var sheet = connect('<sheetId>', {token: '<token>'});
 sheet.dropWorksheet('<sheetTitle>').then(...);
 ```
 
@@ -57,7 +57,7 @@ First you need to retrieve a worksheet instance by title from the sheet. After y
 
 ```
 // retrieve the specific worksheet
-var sheet = Sheetdb.connect('<sheetId>');
+var sheet = connect('<sheetId>');
 sheet.worksheet('<worksheetTitle>').then(function(worksheet) { ... });
 ```
 
@@ -67,7 +67,7 @@ You can **query** the worksheet. You could pass a [mongo like selector](http://d
 
 ```
 // query the worksheet
-var sheet = Sheetdb.connect('<sheetId>');
+var sheet = connect('<sheetId>');
 
 sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
     return Promise.all([
@@ -95,7 +95,7 @@ You can **insert** entries.
 
 ```
 // create new entry in the worksheet
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+var sheet = connect('<sheetId>', {token: '<token>'});
 sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
     return Promise.all([
         // insert multiple entities
@@ -111,7 +111,7 @@ You can **update** entries with completely new object or [mongo update operators
 
 ```
 // update existing entry in the worksheet
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+var sheet = connect('<sheetId>', {token: '<token>'});
 sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
     return Promise.all([
         // simple update
@@ -133,7 +133,7 @@ sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
 
 ```
 // delete existing entry in the worksheet
-var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+var sheet = connect('<sheetId>', {token: '<token>'});
 sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
     return Promise.all([
         // remove every entry in the worksheet
