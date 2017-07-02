@@ -16,49 +16,38 @@ var OPS = {
     $eq:    ' = '
 };
 
-var UPDATE_OPS = [{
-    op: '$set',
-    logic: function(object, key, val) {
+var UPDATE_OPS = {
+    '$set': (object, key, val) => {
         if (object.hasOwnProperty(key)) {
             object[key] = val;
         }
-    }
-}, {
-    op: '$inc',
-    logic: function(object, key, val) {
-        if (object.hasOwnProperty(key) && typeof object[key] === 'number') {
+    },
+    '$inc': (object, key, val) => {
+        if (typeof object[key] === 'number') {
             object[key] += val;
         }
-    }
-}, {
-    op: '$mul',
-    logic: function(object, key, val) {
-        if (object.hasOwnProperty(key) && typeof object[key] === 'number') {
+    },
+    '$mul': (object, key, val) => {
+        if (typeof object[key] === 'number') {
             object[key] *= val;
         }
-    }
-}, {
-    op: '$min',
-    logic: function(object, key, val) {
+    },
+    '$min': (object, key, val) => {
         if (typeof object[key] === 'number') {
             object[key] = object[key] > val ? val : object[key] ;
         }
-    }
-}, {
-    op: '$max',
-    logic: function(object, key, val) {
+    },
+    '$max': (object, key, val) => {
         if (typeof object[key] === 'number') {
             object[key] = object[key] < val ? val : object[key] ;
         }
-    }
-}, {
-    op: '$currentDate',
-    logic: function(object, key, val) {
+    },
+    '$currentDate': (object, key, val) => {
         if (val) {
             object[key] = new Date();
         }
     }
-}];
+};
 
 /**
  * Transform containment operators ($in, $nin) to 'and', 'or' logical operations
@@ -70,10 +59,10 @@ var UPDATE_OPS = [{
  * @returns {object} Translated query
  */
 function containmentOperator(queryObject, actualField, key) {
-    var substitution = {};
+    let substitution = {};
 
-    substitution[key === '$in' ? '$or' : '$and'] = queryObject.map(function(value) {
-        var expression = {};
+    substitution[key === '$in' ? '$or' : '$and'] = queryObject.map(value => {
+        let expression = {};
         expression[actualField] = {};
         expression[actualField][key === '$in' ? '$eq' : '$ne'] = value;
 
@@ -106,9 +95,9 @@ function binaryOperator(queryObject, actualField, key) {
  * @returns {string}
  */
 function logicalOperator(queryObject, actualField, key) {
-    var textQuery = '(';
+    let textQuery = '(';
 
-    for (var i = 0; i < queryObject.length; i++) {
+    for (let i = 0; i < queryObject.length; i++) {
         textQuery += (i > 0 ? OPS[key] : '') + stringify(queryObject[i], actualField);
     }
 
@@ -140,7 +129,7 @@ function handleValue(value) {
     // object is a literal
 
     if (typeof value === 'string') {
-        value = '"' + value + '"';
+        value = `"${value}"`;
     }
 
     return value;
@@ -158,10 +147,10 @@ function handleValue(value) {
 function stringify(query, actualField) {
     query = query || {};
 
-    var key = typeof query === 'object' ? Object.keys(query)[0] : null;
-    var textQuery = '';
+    let key = typeof query === 'object' ? Object.keys(query)[0] : null;
+    let textQuery = '';
 
-    var queryObject = query[key];
+    let queryObject = query[key];
 
     switch (key) {
 
@@ -181,7 +170,7 @@ function stringify(query, actualField) {
 
         case '$in':
         case '$nin':
-            var exp = containmentOperator(queryObject, actualField, key);
+            let exp = containmentOperator(queryObject, actualField, key);
             textQuery += stringify(exp, actualField);
             break;
 
@@ -206,57 +195,55 @@ function stringify(query, actualField) {
 /**
  * Updates the object based on the MongoDB specification. It wont mutate the original object
  *
- * @param {object} originalObject Original object
+ * @param {object} entities Original object
  * @param {object} descriptor Update description
  * @returns {*}
  */
-function updateObject(originalObject, descriptor) {
+function updateObject(entities, descriptor) {
 
-    if (!originalObject) {
-        return originalObject;
+    if (!entities) {
+        return entities;
     }
 
-    var object = util._extend(originalObject instanceof Array ? [] : {}, originalObject);
+    let result = Array.isArray(entities) ? entities : [entities];
 
     if (!isUpdateDescriptor(descriptor)) {
-        return descriptor && typeof descriptor === 'object' ? descriptor : object;
+        return descriptor && typeof descriptor === 'object'
+            ? [util.copyMetaProperties(descriptor, result[0])]
+            : result;
     }
 
-    UPDATE_OPS.forEach(function(operator) {
-        object = mutator(object, descriptor[operator.op], operator.logic);
-    });
+    // get updater operations
+    let operations = Object.keys(descriptor)
+        .map(opType => ({name: opType, transformation: UPDATE_OPS[opType]}))
+        .filter(op => op.transformation);
 
-    return object;
+    for (let operator of operations) {
+        result = mutate(result, descriptor[operator.name], operator.transformation);
+    }
+
+    return result;
 }
 
 /**
  * Mutates the object according to the transform logic.
  *
- * @param {object} object Original entity object
- * @param {object} descObj Update descriptor
- * @param {function} transform Transformator function
+ * @param {object} entities Original entity object
+ * @param {object} operationDescription Update descriptor
+ * @param {function} transformation Transformator function
  * @returns {object}
  */
-function mutator(object, descObj, transform) {
-    if (!descObj) {
+function mutate(entities, operationDescription, transformation) {
+    if (!operationDescription) {
         return object;
     }
 
-    if (object instanceof Array) {
-        object = object.map(function(item) {
-            Object.keys(descObj).forEach(function(key) {
-                transform(item, key, descObj[key]);
-            });
+    return entities.map(item => {
+        Object.keys(operationDescription)
+            .forEach(key => transformation(item, key, operationDescription[key]));
 
-            return item;
-        });
-    } else {
-        Object.keys(descObj).forEach(function(key) {
-            transform(object, key, descObj[key]);
-        });
-    }
-
-    return object;
+        return item;
+    });
 }
 
 /**
@@ -270,10 +257,7 @@ function isUpdateDescriptor(descriptor) {
         return false;
     }
 
-    var keys = Object.keys(descriptor);
-    var supportedOperators = UPDATE_OPS.map(function(operator) { return operator.op; });
-
-    return !util.arrayDiff(keys, supportedOperators).length;
+    return Object.keys(descriptor).some(op => op in UPDATE_OPS);
 }
 
 /**
@@ -287,8 +271,8 @@ function isSingleObjectSelector(selector) {
 }
 
 module.exports = {
-    stringify: stringify,
-    updateObject: updateObject,
-    isUpdateDescriptor: isUpdateDescriptor,
-    isSingleObjectSelector: isSingleObjectSelector
+    stringify,
+    updateObject,
+    isSingleObjectSelector,
+    isUpdateDescriptor
 };

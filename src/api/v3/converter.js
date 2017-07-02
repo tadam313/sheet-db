@@ -139,13 +139,23 @@ function sheetInfoResponse(rawData) {
         title: g(feed.title),
         updated: g(feed.updated),
         workSheets: feed.entry.map(worksheetData),
-        authors: feed.author.map(function(item) {
-            return {
-                name: g(item.name),
-                email: g(item.email)
-            };
-        })
+        authors: feed.author.map(item => ({ name: g(item.name), email: g(item.email) }))
     };
+}
+
+/**
+ * Converts create worksheet result to domain specific data.
+ *
+ * @param rawData
+ * @returns {*}
+ */
+function workSheetInfoResponse(rawData) {
+
+    if (typeof rawData === 'string') {
+        rawData = JSON.parse(rawData);
+    }
+
+    return worksheetData(rawData.entry);
 }
 
 /**
@@ -273,13 +283,14 @@ function createFieldRequest(columnName, position) {
 }
 
 module.exports = {
-    queryFieldNames: queryFieldNames,
-    queryRequest: queryRequest,
-    queryResponse: queryResponse,
-    sheetInfoResponse: sheetInfoResponse,
+    queryFieldNames,
+    queryRequest,
+    queryResponse,
+    sheetInfoResponse,
+    workSheetInfoResponse,
 
-    createFieldRequest: createFieldRequest,
-    createEntryRequest: createEntryRequest,
-    createWorksheetRequest: createWorksheetRequest,
-    updateEntryRequest: updateEntryRequest
+    createFieldRequest,
+    createEntryRequest,
+    createWorksheetRequest,
+    updateEntryRequest
 };

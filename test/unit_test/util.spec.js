@@ -1,7 +1,9 @@
 'use strict';
 
-var util = require('../lib/util');
-var testUtil = require('./test_util');
+require("babel-polyfill");
+
+var util = require('../../lib/util');
+var testUtil = require('./../test_util');
 var expect   = require('chai').expect;
 
 describe('Util', function() {
@@ -31,6 +33,29 @@ describe('Util', function() {
         }];
 
         testUtil.runTests(testCases, util.coerceValue);
+    });
+
+    describe('#coerceNumber', function() {
+
+        it('should handle null values', function() {
+           expect(util.coerceNumber(null)).to.not.be.ok;
+        });
+
+        it('should leave numbers intact', function() {
+            expect(util.coerceNumber(5.14)).to.be.eql(5.14);
+        });
+    });
+
+    describe('#coerceDate', function() {
+
+        it('should handle null values', function() {
+           expect(util.coerceDate(null)).to.not.be.ok;
+        });
+
+        it('should leave numbers intact', function() {
+            let date = new Date();
+            expect(util.coerceDate(date)).to.be.eql(date);
+        });
     });
 
     describe('#getArrayFields', function() {

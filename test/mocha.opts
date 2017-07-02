@@ -1,0 +1,5 @@
+--require co-mocha
+--compilers js:babel-core/register
+--reporter spec
+--ui bdd
+--timeout 5000

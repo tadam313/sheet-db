@@ -24,10 +24,10 @@
     "author": [
       {
         "name": {
-          "$t": "adam.pelle.peter"
+          "$t": "test"
         },
         "email": {
-          "$t": "adam.pelle.peter@gmail.com"
+          "$t": "test@tempuri.org"
         }
       }
     ],

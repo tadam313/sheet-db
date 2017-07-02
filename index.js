@@ -1,36 +1,30 @@
+// require necessary polyfills
+require("babel-polyfill");
+
 var Spreadsheet = require('./lib/spreadsheet');
 var clientFactory = require('./lib/rest_client');
-var util = require('./lib/util');
+var apiFactory = require('./lib/api');
+var cache = require('memory-cache');
 
 /**
  * Connects and initializes the sheet db.
  *
- * @param {string} sheetId ID of the specific spreadsheet
- * @param {object} options Optional options.
- * @param {function} callback
+ * @param {string} sheetId - ID of the specific spreadsheet
+ * @param {object} options - Optional options.
  */
-function connect(sheetId, options, callback) {
+function connect(sheetId, options) {
 
     options = options || {};
-    options.version = 'v3';
 
     // TODO: needs better access token handling
-    var restClient = clientFactory(options.token, options.version);
-
-    var sheetDb = new Spreadsheet(sheetId, restClient, options);
-
-    sheetDb.info(function(err) {
-        if (err) {
-            return callback(err);
-        }
-
-        callback(null, sheetDb);
+    let api = apiFactory.getApi(options.version);
+    let restClient = clientFactory({
+        token: options.token,
+        gApi: api,
+        gCache: cache
     });
+
+    return new Spreadsheet(sheetId, restClient, options);
 }
 
-module.exports = {
-    connect: util.variations([
-        ['sheetId', 'callback'],
-        ['sheetId', 'options', 'callback']
-    ], connect)
-};
+module.exports = connect;

@@ -1,11 +1,13 @@
 'use strict';
 
-var sampleQueryResponse = require('./fixtures/v3/sample_query');
-var sampleSheetInfo = require('./fixtures/v3/sample_sheet_info');
-var sampleFieldNames = require('./fixtures/v3/sample_query_fieldnames');
+require("babel-polyfill");
 
-var api  = require('../lib/api/v3');
-var testUtil = require('./test_util');
+var sampleQueryResponse = require('./../../fixtures/v3/sample_query');
+var sampleSheetInfo = require('./../../fixtures/v3/sample_sheet_info');
+var sampleFieldNames = require('./../../fixtures/v3/sample_query_fieldnames');
+
+var api  = require('../../../lib/api/v3/index');
+var testUtil = require('./../../test_util');
 var util = require('util');
 var expect = require('chai').expect;
 
@@ -55,7 +57,7 @@ describe('Api_V3', function() {
                 sheetId: 'test',
                 token: 'test'}
             ],
-            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full'
+            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full?alt=json'
         }, {
             name: 'should creates the correct URLs for drop_worksheet',
             data: ['drop_worksheet', {
@@ -63,7 +65,7 @@ describe('Api_V3', function() {
                 worksheetId: 'testWS',
                 token: 'test'
             }],
-            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS'
+            expected: 'https://spreadsheets.google.com/feeds/worksheets/test/private/full/testWS?alt=json'
         }, {
             name: 'should creates the correct URLs for query_worksheet',
             data: ['create_entry', {
@@ -71,7 +73,7 @@ describe('Api_V3', function() {
                 worksheetId: 'testWS',
                 token: 'test'
             }],
-            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full'
+            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full?alt=json'
         }, {
             name: 'should creates the correct URLs for query_worksheet',
             data: ['query_worksheet', util._extend({
@@ -92,7 +94,7 @@ describe('Api_V3', function() {
                 token: 'test',
                 entityId: 'testR'
             }],
-            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR'
+            expected: 'https://spreadsheets.google.com/feeds/list/test/testWS/private/full/testR?alt=json'
         }, {
             name: 'should creates the correct URLs for query_fields',
             data: ['query_fields', {
@@ -111,7 +113,7 @@ describe('Api_V3', function() {
                 token: 'test',
                 cellId: 'R14'
             }],
-            expected: 'https://spreadsheets.google.com/feeds/cells/test/testWS/private/full/R14'
+            expected: 'https://spreadsheets.google.com/feeds/cells/test/testWS/private/full/R14?alt=json'
         }];
 
         testUtil.runTests(testCases, function(opType, options) {

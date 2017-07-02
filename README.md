@@ -2,11 +2,11 @@
 
 # sheet-db
 
-The aim of the project is to provide a mongo like interface to Google Spreadsheets API. What is the point of Spreadsheets? It is a real quick and evident data solution, easy to view and share in any browser. In addition it keeps your managers happy since they love sheets, don't they?
+The aim of the project is to provide a mongo like interface to Google Spreadsheets API. What is the point of Spreadsheets? It is a real quick and evident data solution, easy to view and share with any browser. In addition it keeps your managers happy since they love sheets, don't they?
 
-Wait, Spreadsheets are not schema-less like mongo, right? It is true, however sheet-db hides all the nasty schema related things from you, all you need to care is the data itself and ignore the structure. Welcome to the NoSql world!
+Wait, Spreadsheets are not schema-less like mongo, right? It is true, however sheet-db hides all the nasty schema related things from you, all you need to care is the data itself, feel free to ignore the structure. Welcome to the NoSql world!
 
-It supports single queries and CRUD operations also. Please consider that some operations (basically CRUD) require authorization which is not the aim of this project. It is your responsibility to retrieve the access token and pass it to the package. Read more about [google authorization](https://developers.google.com/drive/web/about-auth).
+It supports single queries and also CRUD operations. Please consider that some operations (basically CRUD) require authorization. It is your responsibility to retrieve the access token and pass it to the package. Read more about [google authorization](https://developers.google.com/drive/web/about-auth).
 
 ## Installation
 
@@ -16,7 +16,7 @@ npm install sheet-db
 
 ## Usage
 
-Before you start, please make sure you are familiar with the terminology of Spreadsheets. Especially differences and relations between sheets, worksheets and cells. Read more about [the terminology](https://developers.google.com/google-apps/spreadsheets/index).
+Before you start, please make sure you are familiar with the terminology of Spreadsheets. Especially the differences and relations between sheets, worksheets and cells. Read more about [the terminology](https://developers.google.com/google-apps/spreadsheets/index).
 
 First include the package and connect to the specific spreadsheets.
 
@@ -24,38 +24,31 @@ First include the package and connect to the specific spreadsheets.
 var Sheetdb = require('sheet-db');
 
 // connect to <sheetID>, all subsequent requests will be public (unauthorized)
-Sheetdb.connect('<sheetId>', function(err, sheet) {});
+var sheet = Sheetdb.connect('<sheetId>');
 
 // connect to <sheetId> and set access token and additional options... Now you will communicate in authorized manner.
 // Options
 //  - token: access token you have got from Google
 //  - version: this is the API version. This is future use, only v3 is supported currently
-Sheetdb.connect('<sheetId>', {token: '<token>', version: 'v3'}, function(err, sheet) {});
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>', version: 'v3'});
 ```
 
 ### Working with sheets
 
-Sheets are the highest level entities in Spreadsheets. You can query a specific sheet anytime or create, delete the worksheets.
+Sheets are the highest level entities in Spreadsheets. You can query a specific sheet anytime, create or delete the worksheets.
 
 ```
-// query info about the specifi sheet (authors, worksheets)
-Sheetdb.connect('<sheetId>', function(err, sheet) {
-    sheet.info(function(err, info) { });
-});
+// query info about the specific sheet (authors, worksheets)
+var sheet = Sheetdb.connect('<sheetId>');
+sheet.info().then(...);
 
 // create new sheet (requires authentication)
-Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    sheet.createWorksheet('<sheetTitle>', function(err, worksheet) {
-        if (!err) { }
-    });
-});
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+sheet.createWorksheet('<sheetTitle>').then(...);
 
 // drop a sheet (requires authentication)
-Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    sheet.dropWorksheet('<sheetTitle>', function(err) {
-        if (!err) { }
-    });
-});
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+sheet.dropWorksheet('<sheetTitle>').then(...);
 ```
 
 ### Working with worksheets
@@ -64,15 +57,8 @@ First you need to retrieve a worksheet instance by title from the sheet. After y
 
 ```
 // retrieve the specific worksheet
-Sheetdb.connect('<sheetId>', function(err, sheet) {
-
-    var worksheet = sheet.worksheet('<worksheetTitle>');
-
-    // or via callback
-    sheet.worksheet('<worksheetTitle>', function(err, worksheet) {
-        if (!err) { }
-    });
-});
+var sheet = Sheetdb.connect('<sheetId>');
+sheet.worksheet('<worksheetTitle>').then(function(worksheet) { ... });
 ```
 
 Now you have the worksheet instance and here comes the good part.
@@ -81,26 +67,27 @@ You can **query** the worksheet. You could pass a [mongo like selector](http://d
 
 ```
 // query the worksheet
-Sheetdb.connect('<sheetId>', function(err, sheet) {
-    var worksheet = sheet.worksheet('<worksheetTitle>');
+var sheet = Sheetdb.connect('<sheetId>');
 
-    // query everything
-    worksheet.find(function(err, result) { });
+sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
+    return Promise.all([
+        // query everything
+        worksheet.find(),
 
-    // pass selector object
-    worksheet.find({<mongo like selector>}, function(err, result) { });
+        // pass selector object
+        worksheet.find({<mongo like selector>}),
 
-    // pass selector and also options
-    // Options:
-    // - skip: number of entries skipped from the beginning of the result
-    // - limit: limited length of the result
-    // - sort: single property name, used to sort the data set
-    // - descending: data set is sorted descending
-    worksheet.find(
-        {<mongo like selector>}, 
-        {skip:<num>, limit:<num>, sort:'<fieldName>', descending:<bool>}, 
-        function(err, result) { }
-    );
+        // pass selector and also options
+        // Options:
+        // - skip: number of entries skipped from the beginning of the result
+        // - limit: limited length of the result
+        // - sort: single property name, used to sort the data set
+        // - descending: data set is sorted descending
+        worksheet.find(
+            {<mongo like selector>},
+            {skip:<num>, limit:<num>, sort:'<fieldName>', descending:<bool>}
+        )
+    ]);
 });
 ````
 
@@ -108,14 +95,15 @@ You can **insert** entries.
 
 ```
 // create new entry in the worksheet
-Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    var worksheet = sheet.worksheet('<worksheetTitle>');
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
+    return Promise.all([
+        // insert multiple entities
+        worksheet.insert([{entity}, {entity}]),
 
-    // single entity
-    worksheet.insert({entity}, function(err) { });
-
-    // multiple entities
-    worksheet.insert([{entity}, {entity}], function(err) { });
+        // insert a single entity
+        worksheet.insert({entity})
+    ]);
 });
 ```
 
@@ -123,18 +111,21 @@ You can **update** entries with completely new object or [mongo update operators
 
 ```
 // update existing entry in the worksheet
-Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    var worksheet = sheet.worksheet('<worksheetTitle>');
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
+    return Promise.all([
+        // simple update
+        worksheet.update({<mongo like selector>}, {<new object or mongo updater>}),
 
-    // simple update
-    worksheet.update({<mongo like selector>}, {<new object or mongo updater>}, function(err) { });
-
-    // pass options...
-    // - multiple: update multiple entities (by default it updates only one, the first match)
-    // - upsert: if entity is not found it creates new if the update parameter is NOT a mongo updater
-    worksheet.update({<mongo like selector>}, {<new object or mongo updater>},
-         {multiple:<boolean>, upsert:<boolean>}
-        function(err) { });
+        // pass options...
+        // - multiple: update multiple entities (by default it updates only one, the first match)
+        // - upsert: if entity is not found it creates new if the update parameter is NOT a mongo updater
+        worksheet.update(
+            {<mongo like selector>},
+            {<new object or mongo updater>},
+            {multiple:<boolean>, upsert:<boolean>}
+        )
+    ]);
 });
 ```
 
@@ -142,26 +133,27 @@ Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
 
 ```
 // delete existing entry in the worksheet
-Sheetdb.connect('<sheetId>', {token: '<token>'}, function(err, sheet) {
-    var worksheet = sheet.worksheet('<worksheetTitle>');
+var sheet = Sheetdb.connect('<sheetId>', {token: '<token>'});
+sheet.worksheet('<worksheetTitle>').then(function(worksheet) {
+    return Promise.all([
+        // remove every entry in the worksheet
+        worksheet.remove(),
 
-    // remove every entry in the worksheet
-    worksheet.remove(function(err) { });
+        // remove selected entries in the worksheet
+        worksheet.remove({<mongo like selector>}),
 
-    // remove selected entries in the worksheet
-    worksheet.remove({<mongo like selector>}, function(err) { });
-
-    // pass options...
-    // - justOne: Delete only one entity (the first). It is false by default.
-    worksheet.remove({<mongo like selector>},
-        {justOne:<boolean>},
-        function(err) { });
+        // pass options...
+        // - justOne: Delete only one entity (the first). It is false by default.
+        worksheet.remove({<mongo like selector>}, {justOne:<boolean>})
+    ]);
 });
 ```
 
+Every operation returns a promsie which is a [Promises/A+](https://promisesaplus.com/) compatible object.
+
 ## Contributing
 
-If you have some new idea or just want to refactor existing features a bit, fell free to contribute. 
+If you have some new idea or just want to refactor existing features a bit, fell free to contribute.
 Just fork the repository, do your modification and create a pull request.
 I just want you to keep 2 things:
 
