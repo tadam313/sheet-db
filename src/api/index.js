@@ -14,7 +14,7 @@ function getSupportedVersions() {
 
 /**
  *
- * @param version
+ * @param {String} version
  * @returns {{id: string, api: exports}}
  */
 function getApi(version='v3') {

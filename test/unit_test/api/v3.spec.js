@@ -1,12 +1,10 @@
 'use strict';
 
-require("babel-polyfill");
-
 var sampleQueryResponse = require('./../../fixtures/v3/sample_query');
 var sampleSheetInfo = require('./../../fixtures/v3/sample_sheet_info');
 var sampleFieldNames = require('./../../fixtures/v3/sample_query_fieldnames');
 
-var api  = require('../../../lib/api/v3/index');
+var api  = require('../../../src/api/v3/index');
 var testUtil = require('./../../test_util');
 var util = require('util');
 var expect = require('chai').expect;
@@ -163,7 +161,7 @@ describe('Api_V3', function() {
     });
 
     describe('#sheetInfoResponse', function() {
-        it ('should convert the data', function() {
+        it('should convert the data', function() {
             var converted = api.converter.sheetInfoResponse(sampleSheetInfo);
 
             expect(converted.workSheets.length).to.equal(3);

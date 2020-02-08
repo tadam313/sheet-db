@@ -4,7 +4,7 @@ var ApiError    = require('./api_error');
 var util        = require('./util');
 var request     = require('request');
 
-var cache = null
+var cache = null;
 var token = null;
 var api   = null;
 
@@ -92,7 +92,7 @@ async function querySheetInfo(sheetId) {
  * @param {object} options
  */
 async function createWorksheet(sheetId, worksheetTitle, options) {
-    options = Object.assign({ title: worksheetTitle }, options);
+    options = Object.assign({title: worksheetTitle}, options);
 
     let payload = api.converter.createWorksheetRequest(options);
     let response = await executeRequest('create_worksheet', {

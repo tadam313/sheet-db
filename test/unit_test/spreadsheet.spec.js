@@ -1,13 +1,10 @@
 'use strict';
 
-require("babel-polyfill");
-
-var Spreadsheet = require('../../lib/spreadsheet');
-var Worksheet = require('../../lib/worksheet');
-var api = require('../../lib/api').getApi('v3');
+var Spreadsheet = require('../../src/spreadsheet');
+var Worksheet = require('../../src/worksheet');
+var api = require('../../src/api').getApi('v3');
 var chai = require('chai');
 var sinon = require('sinon');
-require('sinon-as-promised');
 
 var sampleQueryResponse = api.converter.sheetInfoResponse(require('./../fixtures/v3/sample_sheet_info'));
 
@@ -23,9 +20,6 @@ describe('Spreadsheet', function() {
     var sheet;
     var sheetId = 'Sheet1';
     var restClient;
-    var querySheetInfoStub;
-    var createWorksheetStub;
-    var dropWorksheetStub;
 
     beforeEach(function() {
         restClient = {
@@ -42,17 +36,17 @@ describe('Spreadsheet', function() {
 
     describe('#sheetInfo', function() {
 
-        it('should call api', function*() {
+        it('should call api', async () => {
             // act
-            yield sheet.info();
+            await sheet.info();
 
             // assert
             expect(restClient.querySheetInfo).to.have.been.calledWith(sheetId);
         });
 
-        it('should provide expected result', function*() {
+        it('should provide expected result', async () => {
             // act
-            let res = yield sheet.info();
+            let res = await sheet.info();
 
             // assert
             expect(res).to.containSubset({
@@ -69,10 +63,10 @@ describe('Spreadsheet', function() {
 
     describe('#createWorksheet', function() {
 
-        it('should create worksheet if it does not exist', function*() {
+        it('should create worksheet if it does not exist', async () => {
             // act
             let worksheetTitle = 'test';
-            let worksheet = yield sheet.createWorksheet(worksheetTitle);
+            let worksheet = await sheet.createWorksheet(worksheetTitle);
 
             // assert
             expect(restClient.createWorksheet).to.have.been.calledWith(sheetId, worksheetTitle);
@@ -80,9 +74,9 @@ describe('Spreadsheet', function() {
             expect(worksheet).to.be.instanceof(Worksheet);
         });
 
-        it('should not create a worksheet if "create_if_not_exists" flag is disabled', function*() {
+        it('should not create a worksheet if "create_if_not_exists" flag is disabled', async () => {
             // act
-            yield sheet.createWorksheet('Sheet1');
+            await sheet.createWorksheet('Sheet1');
 
             // assert
             expect(restClient.createWorksheet).to.have.not.been.called;
@@ -92,29 +86,28 @@ describe('Spreadsheet', function() {
 
     describe('#dropWorksheet', function() {
 
-        it('should delete worksheet if it does exist', function*() {
+        it('should delete worksheet if it does exist', async () => {
             // act
-            yield sheet.dropWorksheet('Sheet1');
+            await sheet.dropWorksheet('Sheet1');
 
             // assert
             expect(restClient.dropWorksheet).to.have.been.calledWith(sheetId, 'worksheetId_1');
         });
 
-        it('should not delete worksheet if it does not exist', function*() {
+        it('should not delete worksheet if it does not exist', async () => {
             // act
-            yield sheet.dropWorksheet('non-existent');
+            await sheet.dropWorksheet('non-existent');
 
             // assert
             expect(restClient.dropWorksheet).to.have.not.been.called;
         });
     });
 
-
     describe('#worksheets', function() {
 
-        it('should return worksheet instances', function*() {
-           // act
-            let workSheets = yield sheet.worksheets();
+        it('should return worksheet instances', async () => {
+            // act
+            let workSheets = await sheet.worksheets();
 
             // assert
             expect(workSheets).to.have.lengthOf(3);
@@ -124,17 +117,17 @@ describe('Spreadsheet', function() {
 
     describe('#worksheet', function() {
 
-        it('should return worksheet instance', function*() {
+        it('should return worksheet instance', async () => {
             // act
-            let worksheet = yield sheet.worksheet('Sheet1');
+            let worksheet = await sheet.worksheet('Sheet1');
 
             // assert
             expect(worksheet).to.be.instanceof(Worksheet);
         });
 
-        it('should return null if worksheet does not exist', function*() {
+        it('should return null if worksheet does not exist', async () => {
             // act
-            let worksheet = yield sheet.worksheet('not-exists');
+            let worksheet = await sheet.worksheet('not-exists');
 
             // assert
             expect(worksheet).to.not.exist;

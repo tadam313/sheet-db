@@ -1,9 +1,6 @@
-// require necessary polyfills
-require("babel-polyfill");
-
-var Spreadsheet = require('./lib/spreadsheet');
-var clientFactory = require('./lib/rest_client');
-var apiFactory = require('./lib/api');
+var Spreadsheet = require('./src/spreadsheet');
+var clientFactory = require('./src/rest_client');
+var apiFactory = require('./src/api');
 var cache = require('memory-cache');
 
 /**

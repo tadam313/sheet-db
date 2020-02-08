@@ -1,6 +1,5 @@
 'use strict';
 
-
 class ApiError extends Error {
 
     /**
@@ -37,6 +36,5 @@ class ApiError extends Error {
         return 'Something went wrong';
     }
 }
-
 
 module.exports = ApiError;

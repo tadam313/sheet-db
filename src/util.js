@@ -34,7 +34,7 @@ function coerceNumber(value) {
     }
 
     let numberValue = Number(value);
-    return numberValue == value || !value ? numberValue : value
+    return numberValue == value || !value ? numberValue : value;
 }
 
 /**

@@ -1,15 +1,13 @@
 'use strict';
 
-require("babel-polyfill");
-
-var api  = require('../../../lib/api');
+var api  = require('../../../src/api');
 var expect = require('chai').expect;
 
 describe('Api_selector', function() {
 
     describe('#getSupportedVersions', function() {
         it('returns a list', function() {
-           expect(api.getSupportedVersions()).to.be.instanceOf(Array);
+            expect(api.getSupportedVersions()).to.be.instanceOf(Array);
         });
     });
 
@@ -19,7 +17,7 @@ describe('Api_selector', function() {
         });
 
         it('throws error if no such API exist', function() {
-           expect(api.getApi.bind(null, ['not_exists'])).to.throw(Error);
+            expect(api.getApi.bind(null, ['not_exists'])).to.throw(Error);
         });
     });
 });

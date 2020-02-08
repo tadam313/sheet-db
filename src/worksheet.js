@@ -41,7 +41,7 @@ class Worksheet {
             response = response.filter((item, index) => index >= skip && ++picked <= limit);
         }
 
-        return sift(query, response)
+        return response.filter(sift(query));
     }
 
     /**

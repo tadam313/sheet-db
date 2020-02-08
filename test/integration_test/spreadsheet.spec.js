@@ -1,7 +1,7 @@
 'use strict';
 
 var factory = require('./sheet_db_factory');
-var Worksheet = require('../../lib/worksheet');
+var Worksheet = require('../../src/worksheet');
 let testUtil = require('../test_util');
 var chai = require('chai');
 var expect = chai.expect;
@@ -10,28 +10,29 @@ chai.use(require('chai-subset'));
 
 describe('Spreadsheet API', function() {
 
-    let sheetDb, testSheet = 'test-sheet';
+    let sheetDb;
+    let testSheet = 'test-sheet';
 
-    before(function*() {
-        sheetDb = yield factory();
+    before(async () => {
+        sheetDb = await factory();
     });
 
-    beforeEach(function*() {
-        yield testUtil.sleep();
+    beforeEach(async () => {
+        await testUtil.sleep();
     });
 
-    afterEach(function*() {
-        yield sheetDb.dropWorksheet(testSheet);
+    afterEach(async () => {
+        await sheetDb.dropWorksheet(testSheet);
     });
 
     describe('#createWorksheet', function() {
 
-        it('should be able to create new worksheets', function*() {
+        it('should be able to create new worksheets', async () => {
             // arrange
-            yield sheetDb.createWorksheet(testSheet);
+            await sheetDb.createWorksheet(testSheet);
 
             // act
-            let workSheet = yield sheetDb.worksheet(testSheet);
+            let workSheet = await sheetDb.worksheet(testSheet);
 
             // assert
             expect(workSheet).to.be.an.instanceOf(Worksheet);
@@ -41,48 +42,48 @@ describe('Spreadsheet API', function() {
             });
         });
 
-        it('should be able to create a reference', function*() {
+        it('should be able to create a reference', async () => {
             // arrange
-            let result = yield sheetDb.worksheet(testSheet);
+            let result = await sheetDb.worksheet(testSheet);
             expect(result).to.not.be.ok;
 
             // act
-            yield sheetDb.createWorksheet(testSheet);
+            await sheetDb.createWorksheet(testSheet);
 
             // assert
-            result = yield sheetDb.worksheet(testSheet);
+            result = await sheetDb.worksheet(testSheet);
             expect(result).to.be.ok;
         });
     });
 
     describe('#dropWorksheet', function() {
-        beforeEach(function*() {
-            yield sheetDb.createWorksheet(testSheet);
+        beforeEach(async () => {
+            await sheetDb.createWorksheet(testSheet);
         });
 
-        it('should be able to remove worksheets from the list', function*() {
+        it('should be able to remove worksheets from the list', async () => {
             // arrange
-            let result = yield sheetDb.worksheets();
+            let result = await sheetDb.worksheets();
             expect(result).to.have.length.above(0);
 
             // act
-            yield sheetDb.dropWorksheet(testSheet);
+            await sheetDb.dropWorksheet(testSheet);
 
             // assert
-            let newResult = yield sheetDb.worksheets();
+            let newResult = await sheetDb.worksheets();
             expect(newResult).to.have.length.below(result.length);
         });
 
-        it('should be able to erase the reference', function*() {
+        it('should be able to erase the reference', async () => {
             // arrange
-            let result = yield sheetDb.worksheet(testSheet);
+            let result = await sheetDb.worksheet(testSheet);
             expect(result).to.be.ok;
 
             // act
-            yield sheetDb.dropWorksheet(testSheet);
+            await sheetDb.dropWorksheet(testSheet);
 
             // assert
-            result = yield sheetDb.worksheet(testSheet);
+            result = await sheetDb.worksheet(testSheet);
             expect(result).to.not.be.ok;
         });
     });

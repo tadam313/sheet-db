@@ -2,7 +2,6 @@
 
 var Worksheet = require('./worksheet');
 
-
 class Spreadsheet {
 
     /**

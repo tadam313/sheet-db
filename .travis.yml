@@ -1,14 +1,16 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=a191fa9b274de51ffdac1924012aa63e6fd86fc0fea1a70606f058dd9421128e
 language: node_js
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
-  - make
+  - npm run test-ci
 after_script:
-  - make send-coverage
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/lcov.info
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi
 node_js:
-  - '5.1'
-  - '4.2'
-  - '4.1'
-  - '4.0'
-addons:
-  code_climate:
-    repo_token:
-      secure: lh3jBAW0YkoMDs8rH4y3UDlSDhhnBeUZodjTlrjsQrqJlX81bR0UwOObn2jlNDmow3V/CDXCwruqdO4d8xI4r1/VW5exZ98DoybhT6vQ8SlQ0ajbTWZM5w4k+5pKDPoh/uTZud+uEXRkcNrCbx/FDywXwl7uF2oa/zsT8M1Gm5lNp1BsdlzEqy9+Tep+p3d8jSRZWnn7XZBacWBKLBaJP+BX1g+bWw1zRASAh3Ca+1lB8qauunE5T4melhMOOMP0r1w8cHyo1DYWzcQp20tzBOBzDZ/2wBIqW4EoVrmEpoJpBZtgDmMZUtZuyQ0vT8Zbd+1UERQ532uoLfBY1D2MlLG5mLQ76vWpkbSRqbKaREEux+3X9A6qiYQ/lIEXXYDa+1OwW/WI/zcJaO7w9iS1UiwtoNbIHid0++YKSae4WVBr3pS7HIYvIlIlwz5mg1E5Zue0G5ZloEOtwKQSIbkXX8/CyjzJepcLiFdRmjLmVl3hxxsWusOEmnHCINObIlJo89MDS4mIa6VmIqvJZzed0Os/4oazbtecHVaWVY4yhNIhT47jw+T9MeJxmwH7op03afb+qocEAmA/K6fMtJvuVhSzdoYW6T43aKCRhgAzj5xk1rKGP+oQ3Z85io7ZExG/WYtr3JT1maL6fPHcpaaOsojE/o6GxNWDd2MkhNy+iQQ=
+  - 10
+  - 8

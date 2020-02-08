@@ -208,8 +208,8 @@ function updateObject(entities, descriptor) {
     let result = Array.isArray(entities) ? entities : [entities];
 
     if (!isUpdateDescriptor(descriptor)) {
-        return descriptor && typeof descriptor === 'object'
-            ? [util.copyMetaProperties(descriptor, result[0])]
+        return descriptor && typeof descriptor === 'object' ?
+            [util.copyMetaProperties(descriptor, result[0])]
             : result;
     }
 

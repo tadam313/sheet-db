@@ -1,5 +1,6 @@
 {
   "preset": "google",
   "validateIndentation": 4,
-  "maximumLineLength": 120
+  "maximumLineLength": 120,
+  "requireCamelCaseOrUpperCaseIdentifiers": false
 }

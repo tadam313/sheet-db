@@ -1,8 +1,6 @@
 'use strict';
 
-require("babel-polyfill");
-
-var util = require('../../lib/util');
+var util = require('../../src/util');
 var testUtil = require('./../test_util');
 var expect   = require('chai').expect;
 
@@ -38,7 +36,7 @@ describe('Util', function() {
     describe('#coerceNumber', function() {
 
         it('should handle null values', function() {
-           expect(util.coerceNumber(null)).to.not.be.ok;
+            expect(util.coerceNumber(null)).to.not.be.ok;
         });
 
         it('should leave numbers intact', function() {
@@ -49,7 +47,7 @@ describe('Util', function() {
     describe('#coerceDate', function() {
 
         it('should handle null values', function() {
-           expect(util.coerceDate(null)).to.not.be.ok;
+            expect(util.coerceDate(null)).to.not.be.ok;
         });
 
         it('should leave numbers intact', function() {

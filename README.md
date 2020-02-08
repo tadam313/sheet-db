@@ -8,6 +8,8 @@ Wait, Spreadsheets are not schema-less like mongo, right? It is true, however sh
 
 It supports single queries and also CRUD operations. Please consider that some operations (basically CRUD) require authorization. It is your responsibility to retrieve the access token and pass it to the package. Read more about [google authorization](https://developers.google.com/drive/web/about-auth).
 
+__Note__: you can find example how to do a simple [service account authorization](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) at [svc_authenticator](test/integration_test/svc_authenticator.js). You need to create a service account at google api console to get user email address and private key.
+
 ## Installation
 
 ```
