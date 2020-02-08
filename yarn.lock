@@ -206,7 +206,7 @@ babel-messages@^6.23.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-runtime@^6.22.0, babel-runtime@^6.26.0, babel-runtime@^6.9.2:
+babel-runtime@^6.22.0, babel-runtime@^6.26.0, babel-runtime@^6.6.1:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
@@ -240,7 +240,7 @@ babel-traverse@^6.18.0, babel-traverse@^6.26.0:
     invariant "^2.2.2"
     lodash "^4.17.4"
 
-babel-types@^6.18.0, babel-types@^6.26.0:
+babel-types@^6.18.0, babel-types@^6.26.0, babel-types@^6.7.2:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.26.0.tgz#a3b073f94ab49eb6fa55cd65227a334380632497"
   integrity sha1-o7Bz+Uq0nrb6Vc1lInozQ4BjJJc=
@@ -250,7 +250,7 @@ babel-types@^6.18.0, babel-types@^6.26.0:
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
 
-babylon@^6.18.0, babylon@^6.8.1:
+babylon@^6.18.0, babylon@^6.7.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
@@ -561,13 +561,14 @@ crypto-random-string@^1.0.0:
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
 
-cst@^0.4.3:
-  version "0.4.10"
-  resolved "https://registry.yarnpkg.com/cst/-/cst-0.4.10.tgz#9c05c825290a762f0a85c0aabb8c0fe035ae8516"
-  integrity sha512-U5ETe1IOjq2h56ZcBE3oe9rT7XryCH6IKgPMv0L7sSk6w29yR3p5egCK0T3BDNHHV95OoUBgXsqiVG+3a900Ag==
+cst@0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/cst/-/cst-0.1.6.tgz#3abef02e9605a40374115c0db169f78298de6d4e"
+  integrity sha1-Or7wLpYFpAN0EVwNsWn3gpjebU4=
   dependencies:
-    babel-runtime "^6.9.2"
-    babylon "^6.8.1"
+    babel-runtime "^6.6.1"
+    babel-types "^6.7.2"
+    babylon "^6.7.0"
     source-map-support "^0.4.0"
 
 cycle@1.0.x:
@@ -1491,15 +1492,15 @@ jscs-preset-wikimedia@~1.0.0:
   resolved "https://registry.yarnpkg.com/jscs-preset-wikimedia/-/jscs-preset-wikimedia-1.0.1.tgz#a6a5fa5967fd67a5d609038e1c794eaf41d4233d"
   integrity sha512-RWqu6IYSUlnYuCRCF0obCOHjJV0vhpLcvKbauwxmLQoZ0PiXDTWBYlfpsEfdhg7pmREAEwrARfDRz5qWD6qknA==
 
-jscs@^3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/jscs/-/jscs-3.0.7.tgz#7141b4dff5b86e32d0e99d764b836767c30d201a"
-  integrity sha1-cUG03/W4bjLQ6Z12S4NnZ8MNIBo=
+jscs@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/jscs/-/jscs-3.0.0.tgz#08832665a6bd746e3e1e73171b4d90c45e61fcc6"
+  integrity sha1-CIMmZaa9dG4+HnMXG02QxF5h/MY=
   dependencies:
     chalk "~1.1.0"
     cli-table "~0.3.1"
     commander "~2.9.0"
-    cst "^0.4.3"
+    cst "0.1.6"
     estraverse "^4.1.0"
     exit "~0.1.2"
     glob "^5.0.1"

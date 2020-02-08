@@ -39,7 +39,7 @@
     "chai-things": "^0.2.0",
     "chai-xml": "^0.3.2",
     "istanbul": "^1.0.0-alpha.2",
-    "jscs": "^3.0.7",
+    "jscs": "3.0.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^7.0.1",
     "nock": "^11.7.2",
